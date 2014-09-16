@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- publishing environment, used to specify the WEB server connection:
+    	[formal: formal server]
+    	[personal: personal pc] -->
+    <string name="publish_environment">personal</string>
+    
+    <!-- formal server address -->
+    <string name="server_address_formal">http://weloveapi.zhenai.com/</string>
+
+    <!-- personal server address -->
+	<string name="server_address_personal">http://10.10.120.42:8082/</string>
+    
+    <!-- mobile channel number -->
+    <string name="channel_id">902967</string>
+    
+    <!-- Android sub channel number -->
+    <string name="sub_channel_id">1</string>
+
+</resources>
