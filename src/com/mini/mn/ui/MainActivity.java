@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -19,11 +20,13 @@ import com.mini.mn.constant.Constants;
 import com.mini.mn.network.socket.MessageConnectorManager;
 import com.mini.mn.network.socket.MessageConnectorService;
 import com.mini.mn.task.socket.AsyncCallBack;
-import com.mini.mn.task.socket.MessageSocketTaskImpl;
+import com.mini.mn.task.socket.LoginSocketTaskImpl;
 import com.mini.mn.util.StringUtils;
 
 public class MainActivity extends ActionBarActivity {
 
+	private static final String TAG = "LoginSocket";
+	
 	private Button btn;
 	private Button mLinkSocketbtn;
 	private Button mNewPagebtn;
@@ -45,7 +48,6 @@ public class MainActivity extends ActionBarActivity {
 			
 			@Override
 			public void onClick(View v) {
-				if(!StringUtils.isEmpty(mSendContent.getText().toString())){
 //					AbstractRequest内容
 //					FileRequest文件内容
 //					FileRequest fileRequest = new FileRequest();
@@ -55,39 +57,33 @@ public class MainActivity extends ActionBarActivity {
 //					fileRequest.setCmd(Constants.IMCmd.IM_VOICE_CMD);
 //					fileRequest.setData(mapData);
 //					MessageConnectorManager.getManager().send(fileRequest);
-					Map<String, Object> mapData = new HashMap<String, Object>();
-					mapData.put("username", "wenhsh");//假设其对应的userId为1000
-					mapData.put("password", "123456");
-					mapData.put("confirmPassword", "123456");
-					new MessageSocketTaskImpl(new AsyncCallBack() {
-						
-						@Override
-						public void onReplyReceived_OK(Object replyMessage) {
-							
-						}
-						
-						@Override
-						public void onReplyReceived_ERROR(Object replyMessage) {
-							
-						}
-						
-						@Override
-						public void onMessageSentSuccessful(Object message) {
-							
-						}
-						
-						@Override
-						public void onMessageSentFailed(Exception e, Object message) {
-							
-						}
-						
-						@Override
-						public void onMessageReceived(Object receivedMessage) {
-							
-						}
-					}).commit(1001, mapData);
+				new LoginSocketTaskImpl(new AsyncCallBack() {
 					
-				}
+					@Override
+					public void onReplyReceived_OK(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_OK");
+					}
+					
+					@Override
+					public void onReplyReceived_ERROR(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_ERROR");
+					}
+					
+					@Override
+					public void onMessageSentSuccessful(Object message) {
+						Log.i(TAG, "onMessageSentSuccessful");
+					}
+					
+					@Override
+					public void onMessageSentFailed(Exception e, Object message) {
+						Log.i(TAG, "onMessageSentFailed");
+					}
+					
+					@Override
+					public void onMessageReceived(Object receivedMessage) {
+						Log.i(TAG, "onMessageReceived");
+					}
+				}).commit(1001, "wenhsh","123456","123456");
 			}
 		});
 		

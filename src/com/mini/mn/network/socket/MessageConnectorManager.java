@@ -1,7 +1,6 @@
 ﻿package com.mini.mn.network.socket;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +38,8 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
 
-import com.mini.mn.constant.Constants;
 import com.mini.mn.app.MiniApplication;
+import com.mini.mn.constant.Constants;
 import com.mini.mn.filter.ClientMessageCodecFactory;
 import com.mini.mn.filter.KeepAliveMessageFactoryImpl;
 import com.mini.mn.filter.ProtocolCodecFilterImpl;
@@ -80,7 +79,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	public static String MESSAGE_SERVIER_PORT = "MESSAGE_SERVIER_PORT";
 
 	/**
-	 * 消息监听
+	 * 消息监听(全局消息,当有消息自动推送过来,则进行处理,与单一请求不同)
 	 */
 	private ArrayList<OnMessageListener> messageListeners;
 
