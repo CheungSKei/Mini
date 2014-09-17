@@ -44,7 +44,7 @@
         android:textColor="#FF000000"
         android:text="开启新页面" />
 
-    <com.zhiyin.android.widget.ScrollTextView
+    <com.mini.mn.ui.base.ScrollTextView
         android:layout_above="@id/messageLayout"
         android:layout_below="@id/newPageBtn"
         android:id="@+id/msgTxt"
