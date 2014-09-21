@@ -25,7 +25,7 @@ public class LoginSocketTaskImpl extends BaseSocketTask {
 	}
 
 	/**
-	 * 文本消息传送 {@link Constants.IMCmd.IM_TEXT_CMD}
+	 * 文本消息传送 {@link Constants.IMCmd.IM_LOGIN_CMD}
 	 * @param username 用户名
 	 * @param password 密码
 	 * @param confirmPassword 验证密码

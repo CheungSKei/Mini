@@ -1,8 +1,5 @@
 package com.mini.mn.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,14 +17,17 @@ import com.mini.mn.constant.Constants;
 import com.mini.mn.network.socket.MessageConnectorManager;
 import com.mini.mn.network.socket.MessageConnectorService;
 import com.mini.mn.task.socket.AsyncCallBack;
+import com.mini.mn.task.socket.IMMsgSocketTaskImpl;
 import com.mini.mn.task.socket.LoginSocketTaskImpl;
-import com.mini.mn.util.StringUtils;
+import com.mini.mn.task.socket.LogoutSocketTaskImpl;
 
 public class MainActivity extends ActionBarActivity {
 
 	private static final String TAG = "LoginSocket";
 	
-	private Button btn;
+	private Button sendBtn;
+	private Button loginBtn;
+	private Button logoutBtn;
 	private Button mLinkSocketbtn;
 	private Button mNewPagebtn;
 	private TextView msgContent;
@@ -43,20 +43,45 @@ public class MainActivity extends ActionBarActivity {
 		
 		setContentView(R.layout.welcome_activity_layout);
 		
-		btn = (Button) findViewById(R.id.sendBtn);
-		btn.setOnClickListener(new OnClickListener() {
+		sendBtn = (Button) findViewById(R.id.sendBtn);
+		sendBtn.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-//					AbstractRequest内容
-//					FileRequest文件内容
-//					FileRequest fileRequest = new FileRequest();
-//					Map<String,Object> mapData = new HashMap<String,Object>();
-//					mapData.put("filecount", 1);
-//					mapData.put("msg", mSendContent.getText().toString());
-//					fileRequest.setCmd(Constants.IMCmd.IM_VOICE_CMD);
-//					fileRequest.setData(mapData);
-//					MessageConnectorManager.getManager().send(fileRequest);
+				new IMMsgSocketTaskImpl(new AsyncCallBack() {
+					
+					@Override
+					public void onReplyReceived_OK(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_OK");
+					}
+					
+					@Override
+					public void onReplyReceived_ERROR(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_ERROR");
+					}
+					
+					@Override
+					public void onMessageSentSuccessful(Object message) {
+						Log.i(TAG, "onMessageSentSuccessful");
+					}
+					
+					@Override
+					public void onMessageSentFailed(Exception e, Object message) {
+						Log.i(TAG, "onMessageSentFailed");
+					}
+					
+					@Override
+					public void onMessageReceived(Object receivedMessage) {
+						Log.i(TAG, "onMessageReceived");
+					}
+				}).commit(1003, 1001,"wenhsh",1002,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
+			}
+		});
+		
+		loginBtn = (Button) findViewById(R.id.LoginIn);
+		loginBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				new LoginSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
@@ -84,6 +109,40 @@ public class MainActivity extends ActionBarActivity {
 						Log.i(TAG, "onMessageReceived");
 					}
 				}).commit(1001, "wenhsh","123456","123456");
+			}
+		});
+		
+		logoutBtn = (Button) findViewById(R.id.LoginOut);
+		logoutBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new LogoutSocketTaskImpl(new AsyncCallBack() {
+					
+					@Override
+					public void onReplyReceived_OK(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_OK");
+					}
+					
+					@Override
+					public void onReplyReceived_ERROR(Object replyMessage) {
+						Log.i(TAG, "onReplyReceived_ERROR");
+					}
+					
+					@Override
+					public void onMessageSentSuccessful(Object message) {
+						Log.i(TAG, "onMessageSentSuccessful");
+					}
+					
+					@Override
+					public void onMessageSentFailed(Exception e, Object message) {
+						Log.i(TAG, "onMessageSentFailed");
+					}
+					
+					@Override
+					public void onMessageReceived(Object receivedMessage) {
+						Log.i(TAG, "onMessageReceived");
+					}
+				}).commit(1002);
 			}
 		});
 		

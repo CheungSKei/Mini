@@ -223,7 +223,7 @@ public abstract class Entity implements Parcelable, Serializable {
 				try {
 					// 当输出字符串时，不存在的变量需要加入到Json当中
 					Object obecjt = method.invoke(this);
-					getInnerJSONObject().put(method.getName().substring(3),obecjt == null ? ""
+					getInnerJSONObject().put(method.getName().substring(3).toLowerCase(),obecjt == null ? ""
 					: (obecjt instanceof Entity ? new JSONObject(obecjt.toString())
 					: (obecjt instanceof Map ? new JSONObject((Map) obecjt)
 					: (obecjt instanceof JSONTokener ? new JSONObject((JSONTokener) obecjt)

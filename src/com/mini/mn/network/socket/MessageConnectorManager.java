@@ -389,8 +389,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				Object message = (Object) msg.getData().getSerializable(
 						"message");
 				if (message instanceof AbstractResponse) {
-					AsyncCallBack _asyncCallBack = mAsyncCallBackMap
-							.get(((AbstractResponse) message).getMsgId());
+					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractResponse) message).getMsgId());
 					if (_asyncCallBack != null) {
 						// 直接对应回调处理
 						_asyncCallBack.onMessageReceived(message);
@@ -411,8 +410,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				Object reply = msg.getData().getSerializable("replyMessage");
 				if (reply instanceof AbstractResponse) {
 					AbstractResponse abReply = (AbstractResponse) reply;
-					AsyncCallBack _asyncCallBack = mAsyncCallBackMap
-							.get(abReply.getMsgId());
+					AsyncCallBack _asyncCallBack = removeAsyncCallBack(abReply.getMsgId());
 					if (_asyncCallBack != null) {
 						// 直接对应回调处理
 						if(abReply.getCode().equals(Constants.ReturnCode.CODE_200)){
@@ -440,8 +438,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				Serializable message = (Serializable) msg.getData()
 						.getSerializable("message");
 				if (message instanceof AbstractRequest) {
-					AsyncCallBack _asyncCallBack = mAsyncCallBackMap
-							.get(((AbstractRequest) message).getMsgId());
+					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
 					if (_asyncCallBack != null) {
 						// 直接对应回调处理
 						_asyncCallBack.onMessageSentSuccessful(message);
@@ -458,6 +455,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	@Override
 	public void createExceptionCaughtHandler() {
 		exceptionCaughtHandler = new Handler() {
+			@Override
 			public void handleMessage(android.os.Message msg) {
 				Throwable e = (Throwable) msg.getData().getSerializable("e");
 				for (OnMessageListener listener : messageListeners) {
@@ -506,8 +504,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				Exception e = (Exception) msg.getData().getSerializable("e");
 				Object message = msg.getData().getSerializable("message");
 				if (message instanceof AbstractRequest) {
-					AsyncCallBack _asyncCallBack = mAsyncCallBackMap
-							.get(((AbstractRequest) message).getMsgId());
+					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
 					if (_asyncCallBack != null) {
 						_asyncCallBack.onMessageSentFailed(e, message);
 					} else {
@@ -611,10 +608,11 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	 * @param msgId
 	 *            消息Id
 	 */
-	public void removeAsyncCallBack(long msgId) {
+	public AsyncCallBack removeAsyncCallBack(long msgId) {
 		if (mAsyncCallBackMap.containsKey(msgId)) {
-			mAsyncCallBackMap.remove(msgId);
+			return mAsyncCallBackMap.remove(msgId);
 		}
+		return null;
 	}
 
 	/**
