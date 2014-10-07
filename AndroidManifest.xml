@@ -30,9 +30,10 @@
             </intent-filter>
         </activity>
         
+        <!-- Services & Receivers for com.mini.mn:push -->
         <service
-            android:name=".network.socket.MessageConnectorService" android:exported="false"/>
-        
+            android:name="com.mini.mn.booter.CoreService" android:process=":push" />
+
     </application>
 
 </manifest>

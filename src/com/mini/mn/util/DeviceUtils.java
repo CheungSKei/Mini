@@ -414,4 +414,14 @@ public class DeviceUtils {
 	
 		return false;
 	}
+	
+	/**  
+	 * 唯一的设备ID:</br>
+	 *		GSM手机的 IMEI 和 CDMA手机的 MEID.    
+	 * @return null if device ID is not available.   
+	*/
+	public static String getIMEI(){
+		TelephonyManager tm = (TelephonyManager) MiniApplication.getContext().getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+	}
 }

@@ -87,7 +87,7 @@ import com.mini.mn.algorithm.MD5;
 import com.mini.mn.app.MiniApplication;
 
 public final class Util {
-	private static final String TAG = "MicroMsg.Util";
+	private static final String TAG = "Mini.Util";
 
 	public static final int MAX_DECODE_PICTURE_SIZE = 1920 * 1440;
 

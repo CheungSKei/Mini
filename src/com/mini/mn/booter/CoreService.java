@@ -1,5 +1,7 @@
  
-package com.mini.mn.network.socket;
+package com.mini.mn.booter;
+
+import com.mini.mn.network.socket.MessageConnectorManager;
 
 import android.app.Service;
 import android.content.Intent;
@@ -9,17 +11,17 @@ import android.os.IBinder;
 
 /**
  * 与服务端连接服务
+ * 同时处理业务逻辑
  * 
  * @version 1.0.0
  * @date 2014-2-13
  * @author S.Kei.Cheung
  */
-public class MessageConnectorService extends Service {
+public class CoreService extends Service {
 
-   
     MessageConnectorManager manager;
 
-    private IBinder binder=new MessageConnectorService.LocalBinder();
+    private IBinder binder=new CoreService.LocalBinder();
     @Override
     public void onCreate() {
        
@@ -39,7 +41,7 @@ public class MessageConnectorService extends Service {
     	if(intent!=null)
     	{
 	    	String host = intent.getStringExtra(MessageConnectorManager.MESSAGE_SERVIER_HOST);
-	    	int port = intent.getIntExtra(MessageConnectorManager.MESSAGE_SERVIER_PORT, 1234);
+	    	int port = intent.getIntExtra(MessageConnectorManager.MESSAGE_SERVIER_PORT, 58891);
 	    	if(host!=null)
 	    	{
 	    	   manager.connect(host,port);
@@ -67,9 +69,9 @@ public class MessageConnectorService extends Service {
 
     public class LocalBinder extends Binder{
     	
-    	public MessageConnectorService getService()
+    	public CoreService getService()
     	{
-            return MessageConnectorService.this;
+            return CoreService.this;
         }
     }
 	

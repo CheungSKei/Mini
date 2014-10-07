@@ -23,6 +23,7 @@ public class MiniApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		mContext = getApplicationContext();
+		MiniApplicationContext.setContext(mContext);
 	}
 	
 	/**

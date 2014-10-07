@@ -231,7 +231,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	 * @param serverPort
 	 *            端口
 	 */
-	protected void connect(final String serverHost, final int serverPort) {
+	public void connect(final String serverHost, final int serverPort) {
 		messageServerInfo.edit().putInt(MESSAGE_SERVIER_PORT, serverPort)
 				.putString(MESSAGE_SERVIER_HOST, serverHost).commit();
 		if (!netWorkAvailable()) {
@@ -363,8 +363,14 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				}
 
 				android.os.Message msg = new android.os.Message();
-				msg.getData().putSerializable("replyMessage", (Serializable) message);
-				replyReceivedHandler.sendMessage(msg);
+
+				if (message instanceof AbstractResponse) {
+					msg.getData().putSerializable("replyMessage", (Serializable) message);
+					replyReceivedHandler.sendMessage(msg);
+				}else if(message instanceof AbstractRequest){
+					msg.getData().putSerializable("message", (Serializable) message);
+					messageReceivedHandler.sendMessage(msg);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -388,15 +394,9 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 			public void handleMessage(android.os.Message msg) {
 				Object message = (Object) msg.getData().getSerializable(
 						"message");
-				if (message instanceof AbstractResponse) {
-					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractResponse) message).getMsgId());
-					if (_asyncCallBack != null) {
-						// 直接对应回调处理
-						_asyncCallBack.onMessageReceived(message);
-					} else {
-						for (OnMessageListener listener : messageListeners) {
-							listener.onMessageReceived(message);
-						}
+				if (message instanceof AbstractRequest) {
+					for (OnMessageListener listener : messageListeners) {
+						listener.onMessageReceived(message);
 					}
 				}
 			}
@@ -641,6 +641,8 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	 * @return
 	 */
 	public String getCookieValue(){
+		//93af05e5f6cb83a1  1000
+		//433bda476576992d	1001
 		this.mCookieValue="93af05e5f6cb83a1";
 		return this.mCookieValue;
 		//return this.mCookieValue;
