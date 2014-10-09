@@ -24,7 +24,7 @@ import android.database.Cursor;
 public class MemoryStorage implements ISQLiteDatabase {
 	private static final String TAG = "Mini.MemoryStorage";
 
-	private MMDataBase db = null;
+	private MNDataBase db = null;
 	private SqliteDB diskDB = null;
 
 	private boolean hasAttach = false;
@@ -50,7 +50,7 @@ public class MemoryStorage implements ISQLiteDatabase {
 	public MemoryStorage(SqliteDB diskDB) {
 		this.diskDB = diskDB;
 		if (!Util.isNullOrNil(diskDB.getKey())) {
-			db = MMDataBase.openOrCreateEncryptDatabase(null);
+			db = MNDataBase.openOrCreateEncryptDatabase(null);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class MemoryStorage implements ISQLiteDatabase {
 			return -3;
 		}
 		try {
-			if (MMDataBase.checkTableExist(db, tableName)) {
+			if (MNDataBase.checkTableExist(db, tableName)) {
 				db.execSQL("drop table " + tableName);
 			}
 			Cursor cu = diskDB.rawQuery(" select sql from sqlite_master where tbl_name=\"" + tableName + "\" and type = \"table\"", null);
@@ -183,7 +183,7 @@ public class MemoryStorage implements ISQLiteDatabase {
 				waitToAttach.poll();
 				continue;
 			}
-			if (MMDataBase.checkTableExist(db, table)) {
+			if (MNDataBase.checkTableExist(db, table)) {
 				Log.e(TAG, "Error Attach table twice :%s", table);
 				waitToAttach.poll();
 				continue;

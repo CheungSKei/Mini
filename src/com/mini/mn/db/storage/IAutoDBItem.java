@@ -18,7 +18,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 
 public abstract class IAutoDBItem implements MDBItem {
-	private static final String TAG = "MicroMsg.SDK.IAutoDBItem";
+	private static final String TAG = "MiniMsg.IAutoDBItem";
 	
     public static final String FIELD_PREFIX = "field_";
     public static final String SYSTEM_ROWID_FIELD = "rowid";

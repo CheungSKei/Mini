@@ -16,7 +16,7 @@ import com.mini.mn.util.Util;
  */
 public interface IAccountStorage {
 
-	// return current uin
+	// return current uin 用户识别码
 	int getUin();
 
 	Object getAccCfgItem(int item);

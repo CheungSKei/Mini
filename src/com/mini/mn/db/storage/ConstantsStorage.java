@@ -497,29 +497,30 @@ public final class ConstantsStorage {
 
 	// STORAGE PATH
 	public static final String FAKE_SDCARD_ROOT = "/sdcard";	// NOTE: 只用作提示用户，不作代码逻辑
-	public static String DATAROOT_MOBILEMEM_PATH = "/data/data/com.tencent.mm/MicroMsg/";
+	public static String DATAROOT_MOBILEMEM_PATH = "/data/data/com.mini.mn/MiniMsg/";
 	public static final String SDCARD_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
-	public static final String DATAROOT_SDCARD_PATH = SDCARD_ROOT + "/tencent/MicroMsg/";
+	public static final String DATAROOT_SDCARD_PATH = SDCARD_ROOT + "/mini/MiniMsg/";
 
-	public static final String DATAROOT_SDCARD_DOWNLOAD_PATH = SDCARD_ROOT + "/tencent/MicroMsg/Download/";
-	public static final String DATAROOT_SDCARD_CAMERA_PATH = SDCARD_ROOT + "/tencent/MicroMsg/Camera/";
-	public static final String DATAROOT_SDCARD_VIDEO_PATH = SDCARD_ROOT + "/tencent/MicroMsg/Video/";
-	public static final String DATAROOT_SDCARD_VUSER_ICON_PATH = SDCARD_ROOT + "/tencent/MicroMsg/vusericon/";
+	public static final String DATAROOT_SDCARD_DOWNLOAD_PATH = SDCARD_ROOT + "/mini/MiniMsg/Download/";
+	public static final String DATAROOT_SDCARD_CAMERA_PATH = SDCARD_ROOT + "/mini/MiniMsg/Camera/";
+	public static final String DATAROOT_SDCARD_VIDEO_PATH = SDCARD_ROOT + "/mini/MiniMsg/Video/";
+	public static final String DATAROOT_SDCARD_VUSER_ICON_PATH = SDCARD_ROOT + "/mini/MiniMsg/vusericon/";
 
-	public static final String DATAROOT_SDCARD_VOICE_REMIND_DOWNLOAD_PATH = SDCARD_ROOT + "/tencent/MicroMsg/Download/VoiceRemind";
+	public static final String DATAROOT_SDCARD_VOICE_REMIND_DOWNLOAD_PATH = SDCARD_ROOT + "/mini/MiniMsg/Download/VoiceRemind";
 
 	// public static final String ERRLOG_FILENAME = "errLog.cfg";
 	public static final String SYSTEM_INFO_FILENAME = "systemInfo.cfg";
 	public static final String CHAT_STATE_FILENAME = "chatstate.cfg";
-	public static final String DB_NAME = "MicroMsg.db";
+	public static final String DB_NAME = "MiniMsg.db";
 	// public static final String SNS_DB_NAME = "MicroMsgSns.db";
-	public static final String ENDB_NAME = "EnMicroMsg.db";
-	public static final String SNSDB_NAME = "SnsMicroMsg.db";
-	public static final String ENSNSDB_NAME = "EnSnsMicroMsg.db";
+	public static final String ENDB_NAME = "EnMiniMsg.db";
+	public static final String SNSDB_NAME = "SnsMiniMsg.db";
+	// 加密SNS数据库
+	public static final String ENSNSDB_NAME = "EnSnsMiniMsg.db";
 	public static final String NO_MEDIA_FILENAME = ".nomedia";
 	public static final String CRASH_RECORD_FILE = "crash_record_file";
 
-	public static final String COMMONONEDB_NAME = "CommonOneMicroMsg.db";
+	public static final String COMMONONEDB_NAME = "CommonOneMiniMsg.db";
 
 	// TAGs
 	// 自定义的TAGS

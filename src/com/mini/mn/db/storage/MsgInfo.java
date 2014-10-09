@@ -14,7 +14,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 public class MsgInfo extends RMsgInfo {
-	private static final String TAG = "MicroMsg.MsgInfo";
+	private static final String TAG = "MiniMsg.MsgInfo";
 
 	public MsgInfo() {
 		super.field_status = STATE_SENDING;

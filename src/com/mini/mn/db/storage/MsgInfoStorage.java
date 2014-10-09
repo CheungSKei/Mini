@@ -21,7 +21,7 @@ import android.database.Cursor;
 import android.os.Looper;
 
 public class MsgInfoStorage extends MStorage {
-	private static final String TAG = "MicroMsg.MsgInfoStorage";
+	private static final String TAG = "MiniMsg.MsgInfoStorage";
 	
 	public static final int FILTER_MMSG = 0x1;
 	public static final int FILTER_QMSG = 0x2;

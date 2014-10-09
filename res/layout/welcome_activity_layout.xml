@@ -27,17 +27,8 @@
             android:textColor="#FF000000"
             android:text="发送" />
     </LinearLayout>
-
-    <Button
-        android:layout_alignParentTop="true"
-        android:id="@+id/linkSocket"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FF000000"
-        android:text="连接服务器" />
     
     <Button
-       android:layout_below="@id/linkSocket"
         android:id="@+id/LoginIn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

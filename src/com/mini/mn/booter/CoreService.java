@@ -1,7 +1,9 @@
  
 package com.mini.mn.booter;
 
+import com.mini.mn.constant.Constants;
 import com.mini.mn.network.socket.MessageConnectorManager;
+import com.mini.mn.util.Log;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,6 +21,8 @@ import android.os.IBinder;
  */
 public class CoreService extends Service {
 
+	private static final String TAG = "MiniMsg.CoreService";
+	
     MessageConnectorManager manager;
 
     private IBinder binder=new CoreService.LocalBinder();
@@ -40,11 +44,11 @@ public class CoreService extends Service {
     public void onStart(Intent intent, int startId) {
     	if(intent!=null)
     	{
-	    	String host = intent.getStringExtra(MessageConnectorManager.MESSAGE_SERVIER_HOST);
-	    	int port = intent.getIntExtra(MessageConnectorManager.MESSAGE_SERVIER_PORT, 58891);
+	    	String host = Constants.MESSAGE_SERVER_HOST;
+	    	int port = Constants.MESSAGE_SERVER_PORT;
 	    	if(host!=null)
 	    	{
-	    	   manager.connect(host,port);
+	    		connect(host,port);
 	    	}
     	}
     }
@@ -62,11 +66,19 @@ public class CoreService extends Service {
     public void stop() {
     	this.stopSelf();
     }
+    
 	@Override
-	public IBinder onBind(Intent arg0) {
+	public IBinder onBind(Intent intent) {
+		Log.d(TAG, "onBind~~~ threadID:" + Thread.currentThread());
 		return binder;
 	}
 
+	@Override
+	public void onRebind(Intent intent) {
+		Log.d(TAG, "onRebind~~~ threadID:" + Thread.currentThread());
+		super.onRebind(intent);
+	}
+	
     public class LocalBinder extends Binder{
     	
     	public CoreService getService()

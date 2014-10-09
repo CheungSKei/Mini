@@ -4,12 +4,23 @@ import junit.framework.Assert;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-class MMDataBase {
+/**
+ * SQLite加密数据库
+ * 
+ * @version 1.0.0
+ * @date 2014-10-09
+ * @author S.Kei.Cheung
+ */
+class MNDataBase {
 	private info.guardianproject.database.sqlcipher.SQLiteDatabase enDB = null;
 	private android.database.sqlite.SQLiteDatabase sysDB = null;
 
 	private boolean isMem = false;
 
+	/**
+	 * 是否已加密
+	 * @return
+	 */
 	private boolean isEncrypt() {
 		if (!((enDB == null) || (sysDB == null))) {
 			Assert.assertTrue("two db not null at same time", false);
@@ -24,8 +35,8 @@ class MMDataBase {
 		return isMem;
 	}
 
-	public static MMDataBase openOrCreateSystemDatabase(String dbCachePath) {
-		MMDataBase db = new MMDataBase();
+	public static MNDataBase openOrCreateSystemDatabase(String dbCachePath) {
+		MNDataBase db = new MNDataBase();
 		if ((dbCachePath == null) || (dbCachePath.length() == 0)) {
 			db.sysDB = android.database.sqlite.SQLiteDatabase.create(null);
 			db.isMem = true;
@@ -47,8 +58,8 @@ class MMDataBase {
 		}
 	}
 
-	public static MMDataBase openOrCreateEncryptDatabase(String dbCachePath) {
-		MMDataBase db = new MMDataBase();
+	public static MNDataBase openOrCreateEncryptDatabase(String dbCachePath) {
+		MNDataBase db = new MNDataBase();
 		if ((dbCachePath == null) || (dbCachePath.length() == 0)) {
 			db.enDB = info.guardianproject.database.sqlcipher.SQLiteDatabase.openOrCreateDatabase(":memory:", null);
 			db.isMem = true;
@@ -173,8 +184,13 @@ class MMDataBase {
 	// return sysDB.inTransaction();
 	// }
 	// }
-
-	public static boolean checkTableExist(MMDataBase db, String table) {
+	/**
+	 * 检查数据表是否存在
+	 * @param db
+	 * @param table
+	 * @return
+	 */
+	public static boolean checkTableExist(MNDataBase db, String table) {
 		Cursor cu = db.rawQuery("select tbl_name from sqlite_master  where type = \"table\" and tbl_name=\"" + table
 				+ "\"", null);
 		if (cu == null) {

@@ -16,13 +16,19 @@ import com.mini.mn.util.Util;
 import junit.framework.Assert;
 import android.database.Cursor;
 
+/**
+ * 数据库初始化
+ * 
+ * @version 1.0.0
+ * @date 2014-10-09
+ * @author S.Kei.Cheung
+ */
 class DBInit {
 	private static final String TAG = "MicroMsg.DBInit";
-
+	// 创建数据表正则
 	private static final Pattern CREATE_TABLE_PATTERN = Pattern.compile("^[\\s]*CREATE[\\s]+TABLE[\\s]*",Pattern.CASE_INSENSITIVE);
 
-	
-	private MMDataBase db;
+	private MNDataBase db;
 	private String key;
 
 	public DBInit() {
@@ -32,7 +38,7 @@ class DBInit {
 		return key;
 	}
 
-	public MMDataBase getDB() {
+	public MNDataBase getDB() {
 		return db;
 	}
 	
@@ -52,6 +58,11 @@ class DBInit {
 
 	private String errMsg = "";
 	
+	/**
+	 * 插入选项
+	 * @param tFrom
+	 * @param tTo
+	 */
 	private void insertSelect(String tFrom, String tTo) {
 		Set<String> s = new HashSet<String>();
 		String arr = "";
@@ -66,6 +77,7 @@ class DBInit {
 			s.add(cu.getColumnName(i));
 		}
 		cu.close();
+		// PRAGMA table_info 输出tTo表结构
 		cu = db.rawQuery("PRAGMA table_info( " + tTo + " )", null);
 		while (cu.moveToNext()) {
 			String name = cu.getString(cu.getColumnIndex("name"));
@@ -80,6 +92,11 @@ class DBInit {
 		db.execSQL(sql);
 	}
 
+	/**
+	 * 复制表
+	 * @param dbCachePath
+	 * @return
+	 */
 	private boolean copyTables(final String dbCachePath) {
 		Cursor cu = db.rawQuery("select DISTINCT  tbl_name from sqlite_master;", null);
 		if (cu == null) {
@@ -117,13 +134,20 @@ class DBInit {
 		return true;
 	}
 
+	/**
+	 * 初始化非加密数据库
+	 * @param dbCachePath
+	 * @param factories
+	 * @param checkCreateIni
+	 * @return
+	 */
 	public boolean initSysDb(final String dbCachePath, final HashMap<Integer, IFactory> factories , final boolean checkCreateIni) {
 		if (db != null) {
 			db.close();
 			db = null;
 		}
 
-		db = MMDataBase.openOrCreateSystemDatabase(dbCachePath);
+		db = MNDataBase.openOrCreateSystemDatabase(dbCachePath);
 		if (db == null) {
 			return false;
 		}
@@ -134,6 +158,16 @@ class DBInit {
 		return true;
 	}
 
+	/**
+	 * 初始化数据库
+	 * @param dbCachePath
+	 * @param enDbCachePath
+	 * @param uin
+	 * @param imei
+	 * @param factories
+	 * @param checkCreateIni
+	 * @return
+	 */
 	public boolean initDb(final String dbCachePath, final String enDbCachePath, final long uin, final String imei,
 			final HashMap<Integer, IFactory> factories, final boolean checkCreateIni) {
 		Assert.assertTrue("create SqliteDB dbCachePath == null ", !Util.isNullOrNil(dbCachePath));
@@ -173,8 +207,15 @@ class DBInit {
 		return initSysDb(dbCachePath, factories,checkCreateIni);
 	}
 
+	/**
+	 * 打开加密数据库
+	 * @param enDbCachePath
+	 * @param uin
+	 * @param imei
+	 * @return
+	 */
 	private boolean openEncryptDatabase(final String enDbCachePath, final long uin, final String imei) {
-		db = MMDataBase.openOrCreateEncryptDatabase(enDbCachePath);
+		db = MNDataBase.openOrCreateEncryptDatabase(enDbCachePath);
 		if (db == null) {
 			errMsg = "Endbinit open failed: [" + uin + "] dev: [" + imei + "]";
 			return false;
@@ -201,6 +242,12 @@ class DBInit {
 		return true;
 	}
 
+	/**
+	 * 创建表
+	 * @param factories
+	 * @param checkCreateIni
+	 * @return
+	 */
 	private boolean createTables(HashMap<Integer, IFactory> factories , final boolean checkCreateIni) {
 		String iniFilename = "";
 		String newMd5 = "";

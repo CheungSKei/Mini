@@ -10,7 +10,7 @@ import android.database.Cursor;
 
 public class RMsgInfoStorage  extends MStorage {
 
-	public static final String AUTHORITY = "com.tencent.ibg.mm.sdk.msginfo.provider";
+	public static final String AUTHORITY = "com.mini.mn.msginfo.provider";
 
 	public static final String PRIMARY_KEY = RMsgInfo.COL_MSGID;
 

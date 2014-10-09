@@ -13,8 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.mini.mn.R;
-import com.mini.mn.booter.CoreService;
-import com.mini.mn.constant.Constants;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
 import com.mini.mn.network.socket.MessageConnectorManager;
@@ -32,7 +30,6 @@ public class MainActivity extends ActionBarActivity implements OnMessageListener
 	private Button sendBtn;
 	private Button loginBtn;
 	private Button logoutBtn;
-	private Button mLinkSocketbtn;
 	private Button mNewPagebtn;
 	private ScrollTextView msgContent;
 	private EditText mSendContent;
@@ -147,18 +144,6 @@ public class MainActivity extends ActionBarActivity implements OnMessageListener
 						Log.i(TAG, "onMessageReceived");
 					}
 				}).commit(1002);
-			}
-		});
-		
-		mLinkSocketbtn = (Button) findViewById(R.id.linkSocket);
-		mLinkSocketbtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//连接服务端
-				Intent serviceIntent  = new Intent(MainActivity.this, CoreService.class);
-				serviceIntent.putExtra(MessageConnectorManager.MESSAGE_SERVIER_HOST, Constants.MESSAGE_SERVER_HOST);
-				serviceIntent.putExtra(MessageConnectorManager.MESSAGE_SERVIER_PORT, Constants.MESSAGE_SERVER_PORT);
-				startService(serviceIntent);
 			}
 		});
 		

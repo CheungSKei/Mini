@@ -19,8 +19,9 @@ import android.database.Cursor;
  */
 public class SqliteDB implements ISQLiteDatabase {
 	private String TAG = "Mini.SqliteDB";
-	protected MMDataBase db = null;
+	protected MNDataBase db = null;
 	private Callbacks callback = null;
+	// 由DBInit初始化MNDataBase
 	private DBInit dbInit = new DBInit();
 
 	private String closeDBStack = "";
@@ -71,6 +72,13 @@ public class SqliteDB implements ISQLiteDatabase {
 		Log.d(TAG, "end close db time:%d", t.GetDiff());
 	}
 
+	/**
+	 * 初始化DB
+	 * @param dbCachePath
+	 * @param factories
+	 * @param checkCreateIni
+	 * @return
+	 */
 	public boolean initDb(final String dbCachePath, final HashMap<Integer, IFactory> factories , final boolean checkCreateIni) {
 		int idx = dbCachePath.lastIndexOf("/");
 		if(idx != -1){
@@ -377,7 +385,7 @@ public class SqliteDB implements ISQLiteDatabase {
 	}
 
 	public static boolean checkTableExist(SqliteDB db, String table) {
-		return MMDataBase.checkTableExist(db.db, table);
+		return MNDataBase.checkTableExist(db.db, table);
 	}
 }
 

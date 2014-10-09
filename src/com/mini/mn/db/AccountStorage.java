@@ -83,6 +83,11 @@ public class AccountStorage implements IAccountStorage {
 	//private static IDataTransferEvent dtEvent;
 	private static List<IDataTransferEvent> dtEventList = new ArrayList<IDataTransferEvent>();
 	
+	/**
+	 * 初始化文件保存文件夹
+	 * @param sysPath 文件夹路径
+	 * @param event
+	 */
 	public AccountStorage(final String sysPath, final IEvent event) {
 		this.sysPath = sysPath;
 		this.event = event;
@@ -117,6 +122,10 @@ public class AccountStorage implements IAccountStorage {
 		resetAccUin();
 	}
 
+	/**
+	 * SD卡是否可用
+	 * @return
+	 */
 	public boolean isSDCardAvailable() {
 		boolean bRet = Util.isSDCardAvail();
 		// Log.d(TAG ,"dksdcard isSDCardAvailable:" + bRet + " stack:" + com.tencent.mm.sdk.platformtools.Util.getStack());
@@ -134,6 +143,9 @@ public class AccountStorage implements IAccountStorage {
 		return true;
 	}
 
+	/**
+	 * 移动数据文件线程
+	 */
 	static class MoveDataFiles extends Thread {
 		String from;
 		String to;
@@ -210,7 +222,7 @@ public class AccountStorage implements IAccountStorage {
 		this.uin = uin;
 		sp.edit().putBoolean("isLogin", true).commit();
 
-		final String uinPath = MD5.getMessageDigest(("mm" + uin).getBytes());
+		final String uinPath = MD5.getMessageDigest(("mn" + uin).getBytes());
 		accPath = sysPath + uinPath + "/";
 		cachePath = ConstantsStorage.DATAROOT_MOBILEMEM_PATH + uinPath + "/";
 
@@ -430,7 +442,12 @@ public class AccountStorage implements IAccountStorage {
 		initDB(cachePath + ConstantsStorage.DB_NAME, uin, cachePath + ConstantsStorage.ENDB_NAME);
 	}
 	
-
+	/**
+	 * 初始化数据库
+	 * @param cacheDbPath	cacheDB路径
+	 * @param accUin		用户标识码
+	 * @param enCacheDbPath 加密CacheDB路径
+	 */
 	public void initDB(String cacheDbPath, int accUin, String enCacheDbPath) {
 		dataDB = new SqliteDB(new SqliteDB.Callbacks() {
 
@@ -457,6 +474,7 @@ public class AccountStorage implements IAccountStorage {
 			}
 		});
 
+		// getBaseDBFactories()为表信息
 		if (!dataDB.initDb(cacheDbPath, enCacheDbPath, accUin, DeviceUtils.getIMEI(), getBaseDBFactories() , true)) {
 			throw new AccountNotReadyException(AccountNotReadyException.DBVER_EXCEPTION);
 		}

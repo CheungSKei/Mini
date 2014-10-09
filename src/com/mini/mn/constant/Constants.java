@@ -13,8 +13,8 @@ public class Constants {
 	public static final int DEFAULT_MAXIMUM_POOL_SIZE = 128;
 	public static final int DEFAULT_KEEP_ALIVE = 1;
 	
-	// "知音"默认文件夹
-	public static final String DEFAULT_IMAGE_FOLDER_NAME = "Zhiyin";
+	// "觅你"默认文件夹
+	public static final String DEFAULT_IMAGE_FOLDER_NAME = "mini";
 	// 通信结束符
 	public static byte  MESSAGE_SEPARATE='\b';
 	//缓冲区默认大小
