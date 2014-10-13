@@ -34,7 +34,7 @@ public abstract class Entity implements Parcelable, Serializable {
 	private static final long serialVersionUID = -2294312425440873364L;
 
 	private JSONObject mInnerJSONObject;
-
+	
 	/**
 	 * Gets the underlying JSONObject representation of this entity object.
 	 * 
@@ -57,18 +57,7 @@ public abstract class Entity implements Parcelable, Serializable {
 	public void writeToParcel(Parcel dest, int flags) {
 		Field[] fields = this.getClass().getDeclaredFields();
 		for (Field field : fields) {
-			try {
-				if(field.getType().equals("long")){
-					dest.writeLong(field.getLong(this));
-				}else if(field.getType().equals("class java.lang.String")){
-					dest.writeString(field.toString());
-				}else if(field.getType().equals("interface java.util.map")){
-					dest.writeMap((Map<String,Object>)field.get(this));
-				}
-			// dest.writeValue(field);
-			} catch (IllegalAccessException | IllegalArgumentException e) {
-				e.printStackTrace();
-			}
+			dest.writeValue(field);
 		}
 	}
 

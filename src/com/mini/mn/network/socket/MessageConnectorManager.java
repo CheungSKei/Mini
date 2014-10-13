@@ -1,5 +1,6 @@
 ﻿package com.mini.mn.network.socket;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import com.mini.mn.model.Entity;
 import com.mini.mn.ssl.BogusSslContextFactory;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 import com.mini.mn.util.DebugUtils;
+import com.mini.mn.util.SerializerUtil;
 
 /**
  * 连接服务端管理，处理消息接收分发activity处理
@@ -564,33 +566,38 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 	 *            SentBody结构体数据{@link AbstractRequest}
 	 */
 	@Override
-	public void send(Entity message) throws RemoteException {
-		final Entity sendMessage = message;
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
+	public void send(byte[] message) throws RemoteException {
+		try {
+			final Entity sendMessage = (Entity) SerializerUtil.deserialize(message);
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
 
-				if (session == null || !session.isConnected()) {
-					syncConnection(messageServerInfo.getString(
-							MESSAGE_SERVIER_HOST, null), messageServerInfo
-							.getInt(MESSAGE_SERVIER_PORT, 1234));
-				}
+					if (session == null || !session.isConnected()) {
+						syncConnection(messageServerInfo.getString(
+								MESSAGE_SERVIER_HOST, null), messageServerInfo
+								.getInt(MESSAGE_SERVIER_PORT, 1234));
+					}
 
-				if (session != null) {
-					WriteFuture wf = session.write(sendMessage);
+					if (session != null) {
+						WriteFuture wf = session.write(sendMessage);
 
-					// 消息发送超时 10秒
-					wf.awaitUninterruptibly(TIMEOUT, TimeUnit.SECONDS);
+						// 消息发送超时 10秒
+						wf.awaitUninterruptibly(TIMEOUT, TimeUnit.SECONDS);
 
-					if (!wf.isWritten()) {
-						android.os.Message msg = new android.os.Message();
-						msg.getData().putSerializable("message", sendMessage);
-						msg.getData().putSerializable("e", wf.getException());
-						messageSentFailedHandler.sendMessage(msg);
+						if (!wf.isWritten()) {
+							android.os.Message msg = new android.os.Message();
+							msg.getData().putSerializable("message", sendMessage);
+							msg.getData().putSerializable("e", wf.getException());
+							messageSentFailedHandler.sendMessage(msg);
+						}
 					}
 				}
-			}
-		});
+			});
+		} catch (ClassNotFoundException | IOException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -610,7 +617,7 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 	public String getCookieValue() throws RemoteException {
 		//93af05e5f6cb83a1  1000
 		//433bda476576992d	1001
-		this.mCookieValue="433bda476576992d";
+		this.mCookieValue="93af05e5f6cb83a1";
 		return this.mCookieValue;
 	}
 

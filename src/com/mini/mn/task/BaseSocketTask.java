@@ -1,11 +1,13 @@
 package com.mini.mn.task;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.mini.mn.app.MiniCore;
 import com.mini.mn.constant.Constants;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
+import com.mini.mn.util.SerializerUtil;
 
 /**
  * Socket通讯任务类
@@ -53,7 +55,11 @@ public abstract class BaseSocketTask {
 	 * @param message
 	 */
 	private void sendMessage(AbstractRequest message){
-		MiniCore.getMessageEvent().send(message);
+		try {
+			MiniCore.getMessageEvent().send(SerializerUtil.serialize(message));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

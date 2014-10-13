@@ -2,7 +2,6 @@ package com.mini.mn.network.socket;
 
 import com.mini.mn.network.socket.IMessageListener_AIDL;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
-import com.mini.mn.model.Entity;
 
 interface IMessageEvent_AIDL {
 
@@ -26,7 +25,7 @@ interface IMessageEvent_AIDL {
 	 * @param body
 	 *            SentBody结构体数据{@link AbstractRequest}
 	 */
-	void send(in Entity message);
+	void send(in byte[] message);
 	
 	/**
 	 * 关闭连接

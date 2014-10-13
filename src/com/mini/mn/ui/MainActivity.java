@@ -17,7 +17,6 @@ import com.mini.mn.R;
 import com.mini.mn.app.MiniCore;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
-import com.mini.mn.network.socket.MessageConnectorManager;
 import com.mini.mn.network.socket.IMessageListener_AIDL;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 import com.mini.mn.task.socket.IMMsgSocketTaskImpl;
@@ -88,7 +87,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 						// TODO Auto-generated method stub
 						
 					}
-				}).commit(1003, 1001,"wenhsh",1000,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
+				}).commit(1003, 1000,"wenhsh",1001,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
 			}
 		});
 		

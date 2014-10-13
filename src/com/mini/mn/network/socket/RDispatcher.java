@@ -2,7 +2,6 @@ package com.mini.mn.network.socket;
 
 import android.os.RemoteException;
 
-import com.mini.mn.model.Entity;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 
 public class RDispatcher implements IDispatcher {
@@ -32,7 +31,7 @@ public class RDispatcher implements IDispatcher {
 	}
 
 	@Override
-	public void send(Entity message) {
+	public void send(byte[] message) {
 		try {
 			dispatcher.send(message);
 		} catch (RemoteException e) {

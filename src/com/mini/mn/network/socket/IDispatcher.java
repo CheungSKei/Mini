@@ -25,7 +25,7 @@ public interface IDispatcher {
 	 * @param body
 	 *            SentBody结构体数据{@link AbstractRequest}
 	 */
-	void send(Entity message);
+	void send(byte[] message);
 	
 	/**
 	 * 关闭连接
