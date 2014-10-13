@@ -65,8 +65,8 @@ public final class ConstantsProtocal {
 
 	public static final String URL_SVR = "short.weixin.qq.com";
 	public static final int PORT_SVR = 80;
-
-	public static final String URL_SVR2 = "mobileapi.dingfanhe.com";
+	// mobileapi.dingfanhe.com
+	public static final String URL_SVR2 = "112.124.106.42";
 	public static final int PORT_SVR2 = 58891;
 
 	// 通用初始/非法值定义

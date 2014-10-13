@@ -123,7 +123,7 @@ public class Constants {
    
    // 服务器连接端口
    public static final int MESSAGE_SERVER_PORT = 58891;
-   // 服务器地址
-   public static final String MESSAGE_SERVER_HOST = "mobileapi.dingfanhe.com";
+   // 服务器地址 mobileapi.dingfanhe.com
+   public static final String MESSAGE_SERVER_HOST = "112.124.106.42";
    
 }

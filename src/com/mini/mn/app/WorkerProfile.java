@@ -12,13 +12,23 @@ import android.os.IBinder;
 
 import com.mini.mn.booter.CoreService;
 import com.mini.mn.booter.CoreServiceHelper;
+import com.mini.mn.network.socket.IMessageEvent_AIDL;
+import com.mini.mn.network.socket.RDispatcher;
 import com.mini.mn.platformtools.StrictModeHelper;
 import com.mini.mn.util.Log;
 
+/**
+ * 工作线程
+ * 
+ * @version 1.0.0
+ * @date 2014-10-11
+ * @author S.Kei.Cheueng
+ */
 final class WorkerProfile extends MiniApplication.Profile{
-	private static final String TAG = "MicroMsg.WorkerProfile";
+	private static final String TAG = "MiniMsg.WorkerProfile";
 	public static final String PROCESS_NAME = MiniApplicationContext.getPackageName() + "";
 	protected Locale locale;
+	
 
 	public WorkerProfile(MiniApplication app) {
 		super(app);
@@ -58,6 +68,8 @@ final class WorkerProfile extends MiniApplication.Profile{
 			if (binder == null) {
 				Assert.assertTrue("WorkerProfile onServiceConnected binder == null", false);
 			}
+			final RDispatcher dispatcher = new RDispatcher(IMessageEvent_AIDL.Stub.asInterface(binder));
+			MiniCore.setMessageEvent(dispatcher);
 		}
 
 		public void onServiceDisconnected(ComponentName name) {

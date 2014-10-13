@@ -36,6 +36,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 
 import com.mini.mn.app.MiniApplication;
@@ -47,7 +48,7 @@ import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
 import com.mini.mn.model.Entity;
 import com.mini.mn.ssl.BogusSslContextFactory;
-import com.mini.mn.task.socket.AsyncCallBack;
+import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 import com.mini.mn.util.DebugUtils;
 
 /**
@@ -57,8 +58,35 @@ import com.mini.mn.util.DebugUtils;
  * @date 2014-2-13
  * @author S.Kei.Cheung
  */
-public class MessageConnectorManager extends MessageEventHandlerContainer {
+public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 
+	/** 消息接收Handler */
+	protected Handler messageReceivedHandler;
+
+	/** 回复接收Handler */
+	protected Handler replyReceivedHandler;
+
+	/** 成功发送消息Handler */
+	protected Handler messageSentSuccessfulHandler;
+
+	/** 错误捕捉Handler */
+	protected Handler exceptionCaughtHandler;
+
+	/** Session关闭Handler */
+	protected Handler sessionClosedHandler;
+
+	/** Session创建Handler */
+	protected Handler sessionCreatedHandler;
+
+	/** 消息发送失败Handler */
+	protected Handler messageSentFailedHandler;
+
+	/** 连接失败Handler */
+	protected Handler connectionFailedHandler;
+	
+	/** 网络改变Handler */
+	protected Handler networkChangedHandler;
+	
 	private NioSocketConnector connector;
 	private ConnectFuture connectFuture;
 	private IoSession session;
@@ -81,7 +109,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	/**
 	 * 消息监听(全局消息,当有消息自动推送过来,则进行处理,与单一请求不同)
 	 */
-	private ArrayList<OnMessageListener> messageListeners;
+	private ArrayList<IMessageListener_AIDL> messageListeners;
 
 	/**
 	 * 记录所有请求服务器需回调异步数据
@@ -91,7 +119,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	 * @param Value
 	 *            回调接口
 	 */
-	private static Map<Long, AsyncCallBack> mAsyncCallBackMap = new HashMap<Long, AsyncCallBack>();
+	private static Map<Long, IAsyncCallBack_AIDL> mAsyncCallBackMap = new HashMap<Long, IAsyncCallBack_AIDL>();
 	/**
 	 * 单例对象 {@link #getManager(Context)}
 	 */
@@ -110,7 +138,7 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		// device id
 		TelephonyManager TelephonyMgr = (TelephonyManager)this.context.getSystemService(Context.TELEPHONY_SERVICE); 
 		this.mDeviceId = TelephonyMgr.getDeviceId();
-		messageListeners = new ArrayList<OnMessageListener>();
+		messageListeners = new ArrayList<IMessageListener_AIDL>();
 		executor = Executors.newFixedThreadPool(1);
 		messageServerInfo = context.getSharedPreferences("SERVER_INFO", Context.MODE_PRIVATE);
 		// 非阻塞Socket连接
@@ -152,34 +180,6 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		connector.getFilterChain().addLast("heartbeat", heartBeat);
 
 		connector.setHandler(iohandler);
-	}
-
-	/**
-	 * 注册消息监听
-	 * 
-	 * @param listener
-	 */
-	public void registerMessageListener(OnMessageListener listener) {
-
-		if (!messageListeners.contains(listener)) {
-			messageListeners.add(listener);
-			// 按照接收顺序倒序
-			Collections.sort(messageListeners, new MessageReceiveComparator(
-					context));
-		}
-	}
-
-	/**
-	 * 移除消息监听
-	 * 
-	 * @param listener
-	 */
-	public void removeMessageListener(OnMessageListener listener) {
-		for (int i = 0; i < messageListeners.size(); i++) {
-			if (listener.getClass() == messageListeners.get(i).getClass()) {
-				messageListeners.remove(i);
-			}
-		}
 	}
 
 	/**
@@ -243,67 +243,6 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 				syncConnection(serverHost, serverPort);
 			}
 		});
-	}
-
-	/**
-	 * 发送数据
-	 * 
-	 * @param body
-	 *            SentBody结构体数据{@link AbstractRequest}
-	 */
-	public void send(final Entity message) {
-
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-
-				if (session == null || !session.isConnected()) {
-					syncConnection(messageServerInfo.getString(
-							MESSAGE_SERVIER_HOST, null), messageServerInfo
-							.getInt(MESSAGE_SERVIER_PORT, 1234));
-				}
-
-				if (session != null) {
-					WriteFuture wf = session.write(message);
-
-					// 消息发送超时 10秒
-					wf.awaitUninterruptibly(TIMEOUT, TimeUnit.SECONDS);
-
-					if (!wf.isWritten()) {
-						android.os.Message msg = new android.os.Message();
-						msg.getData().putSerializable("message", message);
-						msg.getData().putSerializable("e", wf.getException());
-						messageSentFailedHandler.sendMessage(msg);
-					}
-				}
-			}
-		});
-	}
-
-	public void destroy() {
-		if (session != null) {
-			session.close(false);
-			session.removeAttribute("account");
-		}
-
-		if (connector != null && !connector.isDisposed()) {
-			connector.dispose();
-		}
-		executor.shutdown();
-		manager = null;
-	}
-
-	/**
-	 * 是否断开连接
-	 * 
-	 * @return
-	 */
-	public boolean isConnected() {
-		if (session == null || connector == null) {
-			return false;
-		}
-		return session.isConnected() && session.getRemoteAddress() != null
-				&& connectFuture.isConnected();
 	}
 
 	/**
@@ -387,15 +326,15 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		}
 	};
 
-	@Override
+	/** 创建消息接收Handler */
 	public void createMessageReceivedHandler() {
 		// 消息接收处理
-		super.messageReceivedHandler = new Handler() {
+		messageReceivedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				Object message = (Object) msg.getData().getSerializable(
 						"message");
 				if (message instanceof AbstractRequest) {
-					for (OnMessageListener listener : messageListeners) {
+					for (IMessageListener_AIDL listener : messageListeners) {
 						listener.onMessageReceived(message);
 					}
 				}
@@ -403,76 +342,80 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		};
 	}
 
-	@Override
+	/** 创建回复接收Handler */
 	public void createReplyReceivedHandler() {
-		super.replyReceivedHandler = new Handler() {
+		replyReceivedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				Object reply = msg.getData().getSerializable("replyMessage");
 				if (reply instanceof AbstractResponse) {
 					AbstractResponse abReply = (AbstractResponse) reply;
-					AsyncCallBack _asyncCallBack = removeAsyncCallBack(abReply.getMsgId());
-					if (_asyncCallBack != null) {
-						// 直接对应回调处理
-						if(abReply.getCode().equals(Constants.ReturnCode.CODE_200)){
-							_asyncCallBack.onReplyReceived_OK(reply);
-						}else{
-							_asyncCallBack.onReplyReceived_ERROR(reply);
+					IAsyncCallBack_AIDL _asyncCallBack;
+					try {
+						_asyncCallBack = removeAsyncCallBack(abReply.getMsgId());
+						if (_asyncCallBack != null) {
+							// 直接对应回调处理
+							if(abReply.getCode().equals(Constants.ReturnCode.CODE_200)){
+								_asyncCallBack.onReplyReceived_OK(reply);
+							}else{
+								_asyncCallBack.onReplyReceived_ERROR(reply);
+							}
+						} else {
+							for (IMessageListener_AIDL listener : messageListeners) {
+								listener.onReplyReceived(reply);
+							}
 						}
-					} else {
-						for (OnMessageListener listener : messageListeners) {
-							listener.onReplyReceived(reply);
-						}
+					} catch (RemoteException e) {
+						e.printStackTrace();
 					}
 				}
 			}
 		};
 	}
 
-	/**
-	 * 消息发送成功
-	 */
-	@Override
+	/** 创建消息成功发送Handler */
 	public void createMessageSentSuccessfulHandler() {
-		super.messageSentSuccessfulHandler = new Handler() {
+		messageSentSuccessfulHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				Serializable message = (Serializable) msg.getData()
 						.getSerializable("message");
 				if (message instanceof AbstractRequest) {
-					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
-					if (_asyncCallBack != null) {
-						// 直接对应回调处理
-						_asyncCallBack.onMessageSentSuccessful(message);
-					} else {
-						for (OnMessageListener listener : messageListeners) {
-							listener.onSentSuccessful(message);
+					IAsyncCallBack_AIDL _asyncCallBack;
+					try {
+						_asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
+						if (_asyncCallBack != null) {
+							// 直接对应回调处理
+							_asyncCallBack.onMessageSentSuccessful(message);
+						} else {
+							for (IMessageListener_AIDL listener : messageListeners) {
+								listener.onSentSuccessful(message);
+							}
 						}
+					} catch (RemoteException e) {
+						e.printStackTrace();
 					}
 				}
 			}
 		};
 	}
 
-	@Override
+	/** 创建错误捕捉Handler */
 	public void createExceptionCaughtHandler() {
 		exceptionCaughtHandler = new Handler() {
 			@Override
 			public void handleMessage(android.os.Message msg) {
 				Throwable e = (Throwable) msg.getData().getSerializable("e");
-				for (OnMessageListener listener : messageListeners) {
+				for (IMessageListener_AIDL listener : messageListeners) {
 					listener.onExceptionCaught(e);
 				}
 			}
 		};
 	}
 
-	/**
-	 * Session创建关闭
-	 */
-	@Override
+	/** 创建Session关闭Handler */
 	public void createSessionClosedHandler() {
-		super.sessionClosedHandler = new Handler() {
+		sessionClosedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
-				for (OnMessageListener listener : messageListeners) {
+				for (IMessageListener_AIDL listener : messageListeners) {
 					listener.onConnectionClosed();
 				}
 
@@ -480,37 +423,36 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		};
 	}
 
-	/**
-	 * Session创建失败
-	 */
-	@Override
+	/** 创建Session创建Handler */
 	public void createSessionCreatedHandler() {
-		super.sessionCreatedHandler = new Handler() {
+		sessionCreatedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
-				for (OnMessageListener listener : messageListeners) {
+				for (IMessageListener_AIDL listener : messageListeners) {
 					listener.onConnectionSuccessful();
 				}
 			}
 		};
 	}
 
-	/**
-	 * 消息发送失败
-	 */
-	@Override
+	/** 创建消息发送失败Handler */
 	public void createMessageSentFailedHandler() {
-		super.messageSentFailedHandler = new Handler() {
+		messageSentFailedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				Exception e = (Exception) msg.getData().getSerializable("e");
 				Object message = msg.getData().getSerializable("message");
 				if (message instanceof AbstractRequest) {
-					AsyncCallBack _asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
-					if (_asyncCallBack != null) {
-						_asyncCallBack.onMessageSentFailed(e, message);
-					} else {
-						for (OnMessageListener listener : messageListeners) {
-							listener.onSentFailed(e, message);
+					IAsyncCallBack_AIDL _asyncCallBack;
+					try {
+						_asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
+						if (_asyncCallBack != null) {
+							_asyncCallBack.onMessageSentFailed(e, message);
+						} else {
+							for (IMessageListener_AIDL listener : messageListeners) {
+								listener.onSentFailed(e, message);
+							}
 						}
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -518,17 +460,17 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	}
 
 	protected void onNetworkChanged(NetworkInfo info) {
-		for (OnMessageListener listener : messageListeners) {
+		for (IMessageListener_AIDL listener : messageListeners) {
 			listener.onNetworkChanged(info);
 		}
 	}
 
-	@Override
+	/** 创建连接失败Handler */
 	public void createConnectionFailedHandler() {
-		super.connectionFailedHandler = new Handler() {
+		connectionFailedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				Exception e = (Exception) msg.getData().getSerializable("e");
-				for (OnMessageListener listener : messageListeners) {
+				for (IMessageListener_AIDL listener : messageListeners) {
 					listener.onConnectionFailed(e);
 				}
 			}
@@ -571,51 +513,6 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 	}
 
 	/**
-	 * 服务器Host
-	 * 
-	 * @return
-	 */
-	public String getServerHost() {
-		return messageServerInfo.getString(MESSAGE_SERVIER_HOST, null);
-	}
-
-	/**
-	 * 服务器端口
-	 * 
-	 * @return
-	 */
-	public int getServerPort() {
-		return messageServerInfo.getInt(MESSAGE_SERVIER_PORT, 0);
-	}
-
-	/**
-	 * 添加回调对象
-	 * 
-	 * @param msgId
-	 *            消息Id
-	 * @param asyncCallBackMap
-	 *            回调对象
-	 */
-	public void putAsyncCallBack(long msgId, AsyncCallBack asyncCallBack) {
-		if (!mAsyncCallBackMap.containsKey(msgId)) {
-			mAsyncCallBackMap.put(msgId, asyncCallBack);
-		}
-	}
-
-	/**
-	 * 移除msgId的回调
-	 * 
-	 * @param msgId
-	 *            消息Id
-	 */
-	public AsyncCallBack removeAsyncCallBack(long msgId) {
-		if (mAsyncCallBackMap.containsKey(msgId)) {
-			return mAsyncCallBackMap.remove(msgId);
-		}
-		return null;
-	}
-
-	/**
 	 * 发送广播
 	 * 
 	 * @param message
@@ -627,33 +524,182 @@ public class MessageConnectorManager extends MessageEventHandlerContainer {
 		intent.putExtra("replyMessage", (Serializable) message);
 		context.sendBroadcast(intent);
 	}
+
+	/**
+	 * 注册消息监听
+	 * 
+	 * @param listener
+	 */
+	@Override
+	public void registerMessageListener(IMessageListener_AIDL listener)
+			throws RemoteException {
+		if (!messageListeners.contains(listener)) {
+			messageListeners.add(listener);
+			// 按照接收顺序倒序
+			Collections.sort(messageListeners, new MessageReceiveComparator(
+					context));
+		}
+	}
+
+
+	/**
+	 * 移除消息监听
+	 * 
+	 * @param listener
+	 */
+	@Override
+	public void removeMessageListener(IMessageListener_AIDL listener)
+			throws RemoteException {
+		for (int i = 0; i < messageListeners.size(); i++) {
+			if (listener.getClass() == messageListeners.get(i).getClass()) {
+				messageListeners.remove(i);
+			}
+		}
+	}
 	
+	/**
+	 * 发送数据
+	 * 
+	 * @param body
+	 *            SentBody结构体数据{@link AbstractRequest}
+	 */
+	@Override
+	public void send(Entity message) throws RemoteException {
+		final Entity sendMessage = message;
+		executor.execute(new Runnable() {
+			@Override
+			public void run() {
+
+				if (session == null || !session.isConnected()) {
+					syncConnection(messageServerInfo.getString(
+							MESSAGE_SERVIER_HOST, null), messageServerInfo
+							.getInt(MESSAGE_SERVIER_PORT, 1234));
+				}
+
+				if (session != null) {
+					WriteFuture wf = session.write(sendMessage);
+
+					// 消息发送超时 10秒
+					wf.awaitUninterruptibly(TIMEOUT, TimeUnit.SECONDS);
+
+					if (!wf.isWritten()) {
+						android.os.Message msg = new android.os.Message();
+						msg.getData().putSerializable("message", sendMessage);
+						msg.getData().putSerializable("e", wf.getException());
+						messageSentFailedHandler.sendMessage(msg);
+					}
+				}
+			}
+		});
+	}
+
 	/**
 	 * 设置CookieValue
 	 * @param cookieValue
 	 */
-	public void setCookieValue(String cookieValue){
+	@Override
+	public void setCookieValue(String cookieValue) throws RemoteException {
 		this.mCookieValue = cookieValue;
 	}
-	
+
 	/**
 	 * 取得cookieValue
 	 * @return
 	 */
-	public String getCookieValue(){
+	@Override
+	public String getCookieValue() throws RemoteException {
 		//93af05e5f6cb83a1  1000
 		//433bda476576992d	1001
-		this.mCookieValue="93af05e5f6cb83a1";
+		this.mCookieValue="433bda476576992d";
 		return this.mCookieValue;
-		//return this.mCookieValue;
 	}
-	
+
 	/**
 	 * 取得Device Id
 	 * @return
 	 */
-	public String getDeviceId(){
+	@Override
+	public String getDeviceId() throws RemoteException {
 		return this.mDeviceId;
+	}
+
+	@Override
+	public void destroy() throws RemoteException {
+		if (session != null) {
+			session.close(false);
+			session.removeAttribute("account");
+		}
+
+		if (connector != null && !connector.isDisposed()) {
+			connector.dispose();
+		}
+		executor.shutdown();
+		manager = null;
+	}
+
+	/**
+	 * 是否断开连接
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isConnected() throws RemoteException {
+		if (session == null || connector == null) {
+			return false;
+		}
+		return session.isConnected() && session.getRemoteAddress() != null
+				&& connectFuture.isConnected();
+	}
+
+	/**
+	 * 服务器Host
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getServerHost() throws RemoteException {
+		return messageServerInfo.getString(MESSAGE_SERVIER_HOST, null);
+	}
+
+	/**
+	 * 服务器端口
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getServerPort() throws RemoteException {
+		return messageServerInfo.getInt(MESSAGE_SERVIER_PORT, 0);
+	}
+
+	/**
+	 * 添加回调对象
+	 * 
+	 * @param msgId
+	 *            消息Id
+	 * @param asyncCallBackMap
+	 *            回调对象
+	 */
+	@Override
+	public void putAsyncCallBack(long msgId, IAsyncCallBack_AIDL asyncCallBack)
+			throws RemoteException {
+		if (!mAsyncCallBackMap.containsKey(msgId)) {
+			mAsyncCallBackMap.put(msgId, asyncCallBack);
+		}
+	}
+
+	/**
+	 * 移除msgId的回调
+	 * 
+	 * @param msgId
+	 *            消息Id
+	 */
+	@Override
+	public IAsyncCallBack_AIDL removeAsyncCallBack(long msgId)
+			throws RemoteException {
+		if (mAsyncCallBackMap.containsKey(msgId)) {
+			return mAsyncCallBackMap.remove(msgId);
+		}
+		return null;
 	}
 
 }

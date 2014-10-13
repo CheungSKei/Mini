@@ -9,6 +9,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 
 /**
@@ -24,8 +25,7 @@ public class CoreService extends Service {
 	private static final String TAG = "MiniMsg.CoreService";
 	
     MessageConnectorManager manager;
-
-    private IBinder binder=new CoreService.LocalBinder();
+    
     @Override
     public void onCreate() {
        
@@ -60,7 +60,11 @@ public class CoreService extends Service {
 
     @Override
     public void onDestroy() {
-    	manager.destroy();
+    	try {
+			manager.destroy();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
     }
 
     public void stop() {
@@ -70,7 +74,7 @@ public class CoreService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "onBind~~~ threadID:" + Thread.currentThread());
-		return binder;
+		return manager;
 	}
 
 	@Override
