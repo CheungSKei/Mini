@@ -2,10 +2,10 @@ package com.mini.mn.task;
 
 import java.util.Map;
 
+import com.mini.mn.app.MiniCore;
 import com.mini.mn.constant.Constants;
 import com.mini.mn.model.AbstractRequest;
-import com.mini.mn.task.socket.AsyncCallBack;
-import com.mini.mn.network.socket.MessageConnectorManager;
+import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 
 /**
  * Socket通讯任务类
@@ -16,9 +16,9 @@ import com.mini.mn.network.socket.MessageConnectorManager;
  */
 public abstract class BaseSocketTask {
 
-	private AsyncCallBack asyncCallBack;
+	private IAsyncCallBack_AIDL asyncCallBack;
 	
-	public BaseSocketTask(AsyncCallBack asyncCallBack){
+	public BaseSocketTask(IAsyncCallBack_AIDL asyncCallBack){
 		this.asyncCallBack = asyncCallBack;
 	}
 	
@@ -27,7 +27,7 @@ public abstract class BaseSocketTask {
 	 * @param msgId
 	 */
 	protected void putAsyncCallBack(long msgId){
-		MessageConnectorManager.getManager().putAsyncCallBack(
+		MiniCore.getMessageEvent().putAsyncCallBack(
 				msgId, asyncCallBack);
 	}
 	
@@ -40,8 +40,8 @@ public abstract class BaseSocketTask {
 		_AbstractRequest.setMsgId(msgId);
 		_AbstractRequest.setData(data);
 		_AbstractRequest.setFrom(Constants.FROM_CLIENT);
-		_AbstractRequest.setCookieValue(MessageConnectorManager.getManager().getCookieValue());
-		_AbstractRequest.setDeviceId(MessageConnectorManager.getManager().getDeviceId());
+		_AbstractRequest.setCookieValue(MiniCore.getMessageEvent().getCookieValue());
+		_AbstractRequest.setDeviceId(MiniCore.getMessageEvent().getDeviceId());
 		// 插入回调接口
 		putAsyncCallBack(_AbstractRequest.getMsgId());
 		// 消息发送
@@ -53,7 +53,7 @@ public abstract class BaseSocketTask {
 	 * @param message
 	 */
 	private void sendMessage(AbstractRequest message){
-		MessageConnectorManager.getManager().send(message);
+		MiniCore.getMessageEvent().send(message);
 	}
 	
 }
