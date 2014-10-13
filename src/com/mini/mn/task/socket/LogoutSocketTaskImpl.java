@@ -20,7 +20,7 @@ public class LogoutSocketTaskImpl extends BaseSocketTask {
 	 * 构造函数
 	 * @param asyncCallBack 接口回调
 	 */
-	public LogoutSocketTaskImpl(IAsyncCallBack_AIDL asyncCallBack) {
+	public LogoutSocketTaskImpl(AsyncCallBack asyncCallBack) {
 		super(asyncCallBack);
 	}
 

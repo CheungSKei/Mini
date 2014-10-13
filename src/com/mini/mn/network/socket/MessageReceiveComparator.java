@@ -16,7 +16,7 @@ import android.content.pm.PackageManager;
  * @date 2014-2-13
  * @author S.Kei.Cheung
  */
-public class MessageReceiveComparator  implements Comparator<IMessageListener_AIDL>{
+public class MessageReceiveComparator  implements Comparator<OnMessageListener>{
 
 	Context mcontext;
 	public MessageReceiveComparator(Context ctx)
@@ -25,7 +25,7 @@ public class MessageReceiveComparator  implements Comparator<IMessageListener_AI
 	}
 	
 	@Override
-	public int compare(IMessageListener_AIDL arg1, IMessageListener_AIDL arg2) {
+	public int compare(OnMessageListener arg1, OnMessageListener arg2) {
 		 
 		Integer order1  = Constants.DEFAULT_MESSAGE_ORDER;
 		Integer order2  = Constants.DEFAULT_MESSAGE_ORDER;

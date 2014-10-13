@@ -20,7 +20,7 @@ public class LoginSocketTaskImpl extends BaseSocketTask {
 	 * 构造函数
 	 * @param asyncCallBack 接口回调
 	 */
-	public LoginSocketTaskImpl(IAsyncCallBack_AIDL asyncCallBack) {
+	public LoginSocketTaskImpl(AsyncCallBack asyncCallBack) {
 		super(asyncCallBack);
 	}
 

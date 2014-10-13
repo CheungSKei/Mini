@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -14,18 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.mini.mn.R;
-import com.mini.mn.app.MiniCore;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
 import com.mini.mn.network.socket.MessageConnectorManager;
-import com.mini.mn.network.socket.IMessageListener_AIDL;
-import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
+import com.mini.mn.network.socket.OnMessageListener;
+import com.mini.mn.task.socket.AsyncCallBack;
 import com.mini.mn.task.socket.IMMsgSocketTaskImpl;
 import com.mini.mn.task.socket.LoginSocketTaskImpl;
 import com.mini.mn.task.socket.LogoutSocketTaskImpl;
 import com.mini.mn.ui.base.ScrollTextView;
 
-public class MainActivity extends ActionBarActivity implements IMessageListener_AIDL{
+public class MainActivity extends ActionBarActivity implements OnMessageListener{
 
 	private static final String TAG = "LoginSocket";
 	
@@ -44,14 +42,14 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		super.onCreate(savedInstanceState);
 		System.setProperty("java.net.preferIPv6Addresses", "false");
 		
-		setContentView(R.layout.main_activity_layout);
+		setContentView(R.layout.welcome_activity_layout);
 		
 		sendBtn = (Button) findViewById(R.id.sendBtn);
 		sendBtn.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				new IMMsgSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new IMMsgSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -77,18 +75,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
 					}
-
-					@Override
-					public int describeContents() {
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						// TODO Auto-generated method stub
-						
-					}
-				}).commit(1003, 1001,"wenhsh",1000,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
+				}).commit(1003, 1000,"wenhsh",1001,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
 			}
 		});
 		
@@ -96,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		loginBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LoginSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new LoginSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -121,17 +108,6 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					@Override
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
-					}
-
-					@Override
-					public int describeContents() {
-
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						
 					}
 				}).commit(1001, "wenhsh","123456","123456");
 			}
@@ -141,7 +117,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		logoutBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LogoutSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new LogoutSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -166,17 +142,6 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					@Override
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
-					}
-
-					@Override
-					public int describeContents() {
-
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						
 					}
 				}).commit(1002);
 			}
@@ -193,9 +158,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		
 		msgContent = (ScrollTextView) findViewById(R.id.msgTxt);
 		mSendContent = (EditText) findViewById(R.id.sendContent);
-		if(MiniCore.getMessageEvent()!=null){
-			MiniCore.getMessageEvent().registerMessageListener(this);
-		}
+		MessageConnectorManager.getManager().registerMessageListener(this);
 	}
 	
 	// 判断版本格式,如果版本 > 2.3,就是用相应的程序进行处理,以便影响访问网络
@@ -261,20 +224,8 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 	
 	@Override
 	protected void onDestroy() {
-		if(MiniCore.getMessageEvent()!=null){
-			MiniCore.getMessageEvent().removeMessageListener(this);
-		}
+		MessageConnectorManager.getManager().removeMessageListener(this);
 		super.onDestroy();
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-
 	}
 
 }

@@ -5,13 +5,6 @@ import com.mini.mn.booter.Shell;
 
 import android.content.res.Configuration;
 
-/**
- * 网络连接线程
- * 
- * @version 1.0.0
- * @date 2014-10-11
- * @author S.Kei.Cheueng
- */
 final class PusherProfile extends MiniApplication.Profile {
 	public static final String PROCESS_NAME = MiniApplicationContext.getPackageName() + ":push";
 

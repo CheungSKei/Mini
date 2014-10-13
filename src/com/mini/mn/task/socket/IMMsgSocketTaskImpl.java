@@ -20,7 +20,7 @@ public class IMMsgSocketTaskImpl extends BaseSocketTask {
 	 * 构造函数
 	 * @param asyncCallBack 接口回调
 	 */
-	public IMMsgSocketTaskImpl(IAsyncCallBack_AIDL asyncCallBack) {
+	public IMMsgSocketTaskImpl(AsyncCallBack asyncCallBack) {
 		super(asyncCallBack);
 	}
 

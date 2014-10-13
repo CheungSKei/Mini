@@ -1,8 +1,5 @@
 package com.mini.mn.task.socket;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 
 /**
  * 异步数据回调
@@ -11,22 +8,8 @@ import android.os.Parcelable;
  * @date 2014-03-06
  * @author S.Kei.Cheung
  */
-public interface IAsyncCallBack_AIDL extends Parcelable{
+public interface AsyncCallBack {
 
-	public static final Parcelable.Creator<IAsyncCallBack_AIDL> CREATOR = new Parcelable.Creator<IAsyncCallBack_AIDL>() {  
-		  
-        @Override  
-        public IAsyncCallBack_AIDL[] newArray(int size) {  
-            return new IAsyncCallBack_AIDL[size];  
-        }  
-  
-        @Override  
-        public IAsyncCallBack_AIDL createFromParcel(Parcel source) {  
-            // TODO Auto-generated method stub  
-            return null;  
-        }  
-    };
-	
 	/**
 	 * 数据发送成功
 	 * @param message 发送数据
