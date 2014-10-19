@@ -6,7 +6,7 @@ import com.mini.mn.util.Util;
 import android.os.Handler;
 
 public abstract class SyncTask<R> {
-	private static final String TAG = "MicroMsg.SDK.SyncTask";
+	private static final String TAG = "MiniMsg.SyncTask";
 
 	private R result;
 	private Object lock = new Object();

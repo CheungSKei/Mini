@@ -1,12 +1,11 @@
 package com.mini.mn.ui;
 
-import com.mini.mn.R;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 
-public class WeclomeActivity extends ActionBarActivity {
+import com.mini.mn.R;
+
+public class WeclomeActivity extends BaseAcivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

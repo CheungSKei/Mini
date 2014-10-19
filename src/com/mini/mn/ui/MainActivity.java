@@ -4,9 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.StrictMode;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,17 +12,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.mini.mn.R;
-import com.mini.mn.app.MiniCore;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
 import com.mini.mn.network.socket.IMessageListener_AIDL;
-import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
+import com.mini.mn.network.socket.MessageListener;
+import com.mini.mn.task.socket.AsyncCallBack;
 import com.mini.mn.task.socket.IMMsgSocketTaskImpl;
 import com.mini.mn.task.socket.LoginSocketTaskImpl;
 import com.mini.mn.task.socket.LogoutSocketTaskImpl;
 import com.mini.mn.ui.base.ScrollTextView;
 
-public class MainActivity extends ActionBarActivity implements IMessageListener_AIDL{
+public class MainActivity extends BaseAcivity{
 
 	private static final String TAG = "LoginSocket";
 	
@@ -50,7 +48,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 			
 			@Override
 			public void onClick(View v) {
-				new IMMsgSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new IMMsgSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -75,17 +73,6 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					@Override
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
-					}
-
-					@Override
-					public int describeContents() {
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						// TODO Auto-generated method stub
-						
 					}
 				}).commit(1003, 1000,"wenhsh",1001,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
 			}
@@ -95,7 +82,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		loginBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LoginSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new LoginSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -120,17 +107,6 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					@Override
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
-					}
-
-					@Override
-					public int describeContents() {
-
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						
 					}
 				}).commit(1001, "wenhsh","123456","123456");
 			}
@@ -140,7 +116,7 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		logoutBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LogoutSocketTaskImpl(new IAsyncCallBack_AIDL() {
+				new LogoutSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -165,17 +141,6 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 					@Override
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
-					}
-
-					@Override
-					public int describeContents() {
-
-						return 0;
-					}
-
-					@Override
-					public void writeToParcel(Parcel dest, int flags) {
-						
 					}
 				}).commit(1002);
 			}
@@ -192,9 +157,12 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		
 		msgContent = (ScrollTextView) findViewById(R.id.msgTxt);
 		mSendContent = (EditText) findViewById(R.id.sendContent);
-		if(MiniCore.getMessageEvent()!=null){
-			MiniCore.getMessageEvent().registerMessageListener(this);
-		}
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		registerMessageListener(iMessageListener);
+		super.onPostCreate(savedInstanceState);
 	}
 	
 	// 判断版本格式,如果版本 > 2.3,就是用相应的程序进行处理,以便影响访问网络
@@ -213,67 +181,58 @@ public class MainActivity extends ActionBarActivity implements IMessageListener_
 		}
 	}
 
-	@Override
-	public void onConnectionClosed() {
-		msgContent.append("连接关闭\n");
-	}
+	IMessageListener_AIDL iMessageListener = new MessageListener(){
 
-	@Override
-	public void onConnectionSuccessful() {
-		Log.i(TAG, "onConnectionSuccessful");
-	}
-
-	@Override
-	public void onConnectionFailed(Exception e) {
-		Log.i(TAG, "onConnectionFailed");
-	}
-
-	@Override
-	public void onExceptionCaught(Throwable throwable) {
-		Log.i(TAG, "onExceptionCaught");
-	}
-
-	@Override
-	public void onMessageReceived(Object message) {
-		msgContent.append(((AbstractRequest)message).toString()+"\n");
-	}
-
-	@Override
-	public void onReplyReceived(Object reply) {
-		msgContent.append(((AbstractResponse)reply).toString()+"\n");
-	}
-
-	@Override
-	public void onSentSuccessful(Object message) {
-		Log.i(TAG, "onSentSuccessful");
-	}
-
-	@Override
-	public void onSentFailed(Exception e, Object message) {
-		msgContent.append("发送失败\n");
-	}
-
-	@Override
-	public void onNetworkChanged(NetworkInfo info) {
-		
-	}
+		@Override
+		public void onConnectionClosed() {
+			msgContent.append("连接关闭\n");
+		}
+	
+		@Override
+		public void onConnectionSuccessful() {
+			Log.i(TAG, "onConnectionSuccessful");
+		}
+	
+		@Override
+		public void onConnectionFailed(Exception exception) {
+			Log.i(TAG, "onConnectionFailed");
+		}
+	
+		@Override
+		public void onExceptionCaught(Throwable throwable) {
+			Log.i(TAG, "onExceptionCaught");
+		}
+	
+		@Override
+		public void onMessageReceived(Object message) {
+			msgContent.append(((AbstractRequest)message).toString()+"\n");
+		}
+	
+		@Override
+		public void onReplyReceived(Object reply) {
+			msgContent.append(((AbstractResponse)reply).toString()+"\n");
+		}
+	
+		@Override
+		public void onSentSuccessful(Object message) {
+			Log.i(TAG, "onSentSuccessful");
+		}
+	
+		@Override
+		public void onSentFailed(Exception exception, Object message) {
+			msgContent.append("发送失败\n");
+		}
+	
+		@Override
+		public void onNetworkChanged(NetworkInfo info) {
+			
+		}
+	};
 	
 	@Override
 	protected void onDestroy() {
-		if(MiniCore.getMessageEvent()!=null){
-			MiniCore.getMessageEvent().removeMessageListener(this);
-		}
+		removeMessageListener(iMessageListener);
 		super.onDestroy();
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-
 	}
 
 }

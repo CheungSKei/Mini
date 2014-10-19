@@ -10,14 +10,14 @@ interface IMessageEvent_AIDL {
 	 * 
 	 * @param listener
 	 */
-	void registerMessageListener(in IMessageListener_AIDL listener);
+	void registerMessageListener(IMessageListener_AIDL listener);
 	
 	/**
 	 * 移除消息监听
 	 * 
 	 * @param listener
 	 */
-	void removeMessageListener(in IMessageListener_AIDL listener);
+	void removeMessageListener(IMessageListener_AIDL listener);
 	
 	/**
 	 * 发送数据
@@ -62,7 +62,7 @@ interface IMessageEvent_AIDL {
 	 * @param asyncCallBackMap
 	 *            回调对象
 	 */
-	void putAsyncCallBack(long msgId,in IAsyncCallBack_AIDL asyncCallBack);
+	void putAsyncCallBack(long msgId,IAsyncCallBack_AIDL asyncCallBack);
 	
 	/**
 	 * 移除msgId的回调

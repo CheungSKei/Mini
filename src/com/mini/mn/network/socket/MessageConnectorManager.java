@@ -39,6 +39,7 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.mini.mn.app.MiniApplication;
 import com.mini.mn.constant.Constants;
@@ -337,7 +338,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 						"message");
 				if (message instanceof AbstractRequest) {
 					for (IMessageListener_AIDL listener : messageListeners) {
-						listener.onMessageReceived(message);
+						try {
+							listener.onMessageReceived(SerializerUtil.serialize(message));
+						} catch (RemoteException | IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -357,16 +362,16 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 						if (_asyncCallBack != null) {
 							// 直接对应回调处理
 							if(abReply.getCode().equals(Constants.ReturnCode.CODE_200)){
-								_asyncCallBack.onReplyReceived_OK(reply);
+								_asyncCallBack.onReplyReceived_OK(SerializerUtil.serialize(reply));
 							}else{
-								_asyncCallBack.onReplyReceived_ERROR(reply);
+								_asyncCallBack.onReplyReceived_ERROR(SerializerUtil.serialize(reply));
 							}
 						} else {
 							for (IMessageListener_AIDL listener : messageListeners) {
-								listener.onReplyReceived(reply);
+								listener.onReplyReceived(SerializerUtil.serialize(reply));
 							}
 						}
-					} catch (RemoteException e) {
+					} catch (RemoteException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -386,13 +391,13 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 						_asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
 						if (_asyncCallBack != null) {
 							// 直接对应回调处理
-							_asyncCallBack.onMessageSentSuccessful(message);
+							_asyncCallBack.onMessageSentSuccessful(SerializerUtil.serialize(message.toString()));
 						} else {
 							for (IMessageListener_AIDL listener : messageListeners) {
-								listener.onSentSuccessful(message);
+								listener.onSentSuccessful(SerializerUtil.serialize(message.toString()));
 							}
 						}
-					} catch (RemoteException e) {
+					} catch (RemoteException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -407,7 +412,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 			public void handleMessage(android.os.Message msg) {
 				Throwable e = (Throwable) msg.getData().getSerializable("e");
 				for (IMessageListener_AIDL listener : messageListeners) {
-					listener.onExceptionCaught(e);
+					try {
+						listener.onExceptionCaught(SerializerUtil.serialize(e));
+					} catch (RemoteException | IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		};
@@ -418,7 +427,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 		sessionClosedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				for (IMessageListener_AIDL listener : messageListeners) {
-					listener.onConnectionClosed();
+					try {
+						listener.onConnectionClosed();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 				}
 
 			}
@@ -430,7 +443,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 		sessionCreatedHandler = new Handler() {
 			public void handleMessage(android.os.Message msg) {
 				for (IMessageListener_AIDL listener : messageListeners) {
-					listener.onConnectionSuccessful();
+					try {
+						listener.onConnectionSuccessful();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};
@@ -447,13 +464,13 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 					try {
 						_asyncCallBack = removeAsyncCallBack(((AbstractRequest) message).getMsgId());
 						if (_asyncCallBack != null) {
-							_asyncCallBack.onMessageSentFailed(e, message);
+							_asyncCallBack.onMessageSentFailed(SerializerUtil.serialize(e), SerializerUtil.serialize(message));
 						} else {
 							for (IMessageListener_AIDL listener : messageListeners) {
-								listener.onSentFailed(e, message);
+								listener.onSentFailed(SerializerUtil.serialize(e), SerializerUtil.serialize(message));
 							}
 						}
-					} catch (RemoteException e1) {
+					} catch (RemoteException | IOException e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -463,7 +480,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 
 	protected void onNetworkChanged(NetworkInfo info) {
 		for (IMessageListener_AIDL listener : messageListeners) {
-			listener.onNetworkChanged(info);
+			try {
+				listener.onNetworkChanged(SerializerUtil.serialize(info));
+			} catch (RemoteException | IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -473,7 +494,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 			public void handleMessage(android.os.Message msg) {
 				Exception e = (Exception) msg.getData().getSerializable("e");
 				for (IMessageListener_AIDL listener : messageListeners) {
-					listener.onConnectionFailed(e);
+					try {
+						listener.onConnectionFailed(SerializerUtil.serialize(e));
+					} catch (RemoteException | IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		};
@@ -535,6 +560,11 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 	@Override
 	public void registerMessageListener(IMessageListener_AIDL listener)
 			throws RemoteException {
+		if(listener == null){
+			Log.i("MessageConnectorManager", "listener is null");
+		}else{
+			Log.i("MessageConnectorManager", "listener is not null");
+		}
 		if (!messageListeners.contains(listener)) {
 			messageListeners.add(listener);
 			// 按照接收顺序倒序

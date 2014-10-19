@@ -1,6 +1,6 @@
 package com.mini.mn.network.socket;
 
-import com.mini.mn.model.Entity;
+import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.task.socket.IAsyncCallBack_AIDL;
 
 public interface IDispatcher {
