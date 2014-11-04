@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.mini.mn.R;
+import com.mini.mn.app.MiniCore;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
 import com.mini.mn.network.socket.IMessageListener_AIDL;
@@ -48,33 +49,35 @@ public class MainActivity extends BaseAcivity{
 			
 			@Override
 			public void onClick(View v) {
-				new IMMsgSocketTaskImpl(new AsyncCallBack() {
-					
-					@Override
-					public void onReplyReceived_OK(Object replyMessage) {
-						Log.i(TAG, "onReplyReceived_OK");
-					}
-					
-					@Override
-					public void onReplyReceived_ERROR(Object replyMessage) {
-						Log.i(TAG, "onReplyReceived_ERROR");
-					}
-					
-					@Override
-					public void onMessageSentSuccessful(Object message) {
-						Log.i(TAG, "onMessageSentSuccessful");
-					}
-					
-					@Override
-					public void onMessageSentFailed(Exception e, Object message) {
-						Log.i(TAG, "onMessageSentFailed");
-					}
-					
-					@Override
-					public void onMessageReceived(Object receivedMessage) {
-						Log.i(TAG, "onMessageReceived");
-					}
-				}).commit(1003, 1000,"wenhsh",1001,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
+				IMMsgSocketTaskImpl msgTask = new IMMsgSocketTaskImpl(new AsyncCallBack() {
+							
+						@Override
+						public void onReplyReceived_OK(Object replyMessage) {
+							Log.i(TAG, "onReplyReceived_OK");
+						}
+						
+						@Override
+						public void onReplyReceived_ERROR(Object replyMessage) {
+							Log.i(TAG, "onReplyReceived_ERROR");
+						}
+						
+						@Override
+						public void onMessageSentSuccessful(Object message) {
+							Log.i(TAG, "onMessageSentSuccessful");
+						}
+						
+						@Override
+						public void onMessageSentFailed(Exception e, Object message) {
+							Log.i(TAG, "onMessageSentFailed");
+						}
+						
+						@Override
+						public void onMessageReceived(Object receivedMessage) {
+							Log.i(TAG, "onMessageReceived");
+						}
+					});
+				msgTask.commit(1003, 1001,"wenhsh",1000,"wenhsh",mSendContent.getText().toString(),mSendContent.getText().toString());
+				MiniCore.getNetSceneQueue().doScene(msgTask);
 			}
 		});
 		
@@ -82,7 +85,7 @@ public class MainActivity extends BaseAcivity{
 		loginBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LoginSocketTaskImpl(new AsyncCallBack() {
+				LoginSocketTaskImpl loginTask = new LoginSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -108,7 +111,9 @@ public class MainActivity extends BaseAcivity{
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
 					}
-				}).commit(1001, "wenhsh","123456","123456");
+				});
+				loginTask.commit(1001, "wenhsh","123456","123456");
+				MiniCore.getNetSceneQueue().doScene(loginTask);
 			}
 		});
 		
@@ -116,7 +121,7 @@ public class MainActivity extends BaseAcivity{
 		logoutBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new LogoutSocketTaskImpl(new AsyncCallBack() {
+				LogoutSocketTaskImpl logoutTask = new LogoutSocketTaskImpl(new AsyncCallBack() {
 					
 					@Override
 					public void onReplyReceived_OK(Object replyMessage) {
@@ -142,7 +147,9 @@ public class MainActivity extends BaseAcivity{
 					public void onMessageReceived(Object receivedMessage) {
 						Log.i(TAG, "onMessageReceived");
 					}
-				}).commit(1002);
+				});
+				logoutTask.commit(1002);
+				MiniCore.getNetSceneQueue().doScene(logoutTask);
 			}
 		});
 		

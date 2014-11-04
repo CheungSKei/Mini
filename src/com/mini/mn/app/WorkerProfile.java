@@ -13,6 +13,7 @@ import android.os.IBinder;
 import com.mini.mn.booter.CoreService;
 import com.mini.mn.booter.CoreServiceHelper;
 import com.mini.mn.network.socket.IMessageEvent_AIDL;
+import com.mini.mn.network.socket.NetSceneQueue;
 import com.mini.mn.network.socket.RDispatcher;
 import com.mini.mn.platformtools.StrictModeHelper;
 import com.mini.mn.util.Log;
@@ -40,6 +41,20 @@ final class WorkerProfile extends MiniApplication.Profile{
 		// set up strict mode for debug
 		StrictModeHelper.enableStrictMode(com.mini.mn.BuildConfig.DEBUG);
 
+		// first of first
+		MiniCore.initialize(new NetSceneQueue.IOnQueueIdle() {
+
+			@Override
+			public void onQueueIdle(NetSceneQueue queue, boolean canQueue) {
+				
+			}
+
+			@Override
+			public void onPrepareDispatcher(NetSceneQueue queue) {
+				
+			}
+		});
+		
 		bindCore(app);
 	}
 

@@ -8,17 +8,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Looper;
+
 import com.mini.mn.algorithm.LRUMap;
 import com.mini.mn.constant.ConstantsProtocal;
 import com.mini.mn.db.SqliteDB;
 import com.mini.mn.platformtools.TimeLogger;
 import com.mini.mn.util.Log;
 import com.mini.mn.util.Util;
-
-import junit.framework.Assert;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.os.Looper;
 
 public class MsgInfoStorage extends MStorage {
 	private static final String TAG = "MiniMsg.MsgInfoStorage";
@@ -81,7 +81,7 @@ public class MsgInfoStorage extends MStorage {
 	private final SqliteDB db;
 
 	public static final String[] SQL_CREATE = new String[] {
-			// MMSG_TABLE
+			// MMSG_TABLE 同时创建索引
 			"CREATE TABLE IF NOT EXISTS " + MsgInfo.MMSG_TABLE + " ( "
 					+ MsgInfo.COL_MSGID + " INTEGER PRIMARY KEY, "
 					+ MsgInfo.COL_MSGSVRID + " INTEGER , "
@@ -109,88 +109,6 @@ public class MsgInfoStorage extends MStorage {
 			"CREATE INDEX IF NOT EXISTS " + " messageCreateTaklerTimeIndex ON " + MsgInfo.MMSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_CREATETIME + " )" ,
 			
 			"CREATE INDEX IF NOT EXISTS " + " messageSendCreateTimeIndex ON " + MsgInfo.MMSG_TABLE + " ( " + MsgInfo.COL_STATUS + "," + MsgInfo.COL_ISSEND + "," + MsgInfo.COL_CREATETIME + " )" ,
-			
-			
-			// QMSG_TABLE
-			"CREATE TABLE IF NOT EXISTS " + MsgInfo.QMSG_TABLE + " ( "
-					+ MsgInfo.COL_MSGID + " INTEGER PRIMARY KEY, "
-					+ MsgInfo.COL_MSGSVRID + " INTEGER , "
-					+ MsgInfo.COL_TYPE + " INT, "
-					+ MsgInfo.COL_STATUS + " INT, "
-					+ MsgInfo.COL_ISSEND + " INT, "
-					+ MsgInfo.COL_ISSHOWTIMER + " INTEGER, "
-					+ MsgInfo.COL_CREATETIME + " INTEGER, "
-					+ MsgInfo.COL_TALKER + " TEXT, "
-					+ MsgInfo.COL_CONTENT + " TEXT, "
-					+ MsgInfo.COL_IMGPATH + " TEXT, "
-					+ MsgInfo.COL_RESERVED + " TEXT, "
-					+ MsgInfo.COL_LVBUFFER + " BLOB )",
-
-			"CREATE INDEX IF NOT EXISTS " + " qmessageSvrIdIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_MSGSVRID + " )",
-
-			"CREATE INDEX IF NOT EXISTS " + " qmessageTalkerIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_TALKER + " )" ,
-	
-			"CREATE INDEX IF NOT EXISTS " + " qmessageTalerStatusIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_STATUS + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " qmessageCreateTimeIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_CREATETIME + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " qmessageCreateTaklerTimeIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_CREATETIME + " )" ,
-
-			"CREATE INDEX IF NOT EXISTS " + " qmessageSendCreateTimeIndex ON " + MsgInfo.QMSG_TABLE + " ( " + MsgInfo.COL_STATUS + "," + MsgInfo.COL_ISSEND + "," + MsgInfo.COL_CREATETIME + " )" ,
-			
-			// TMSG_TABLE
-			"CREATE TABLE IF NOT EXISTS " + MsgInfo.TMSG_TABLE + " ( "
-					+ MsgInfo.COL_MSGID + " INTEGER PRIMARY KEY, "
-					+ MsgInfo.COL_MSGSVRID + " INTEGER , "
-					+ MsgInfo.COL_TYPE + " INT, "
-					+ MsgInfo.COL_STATUS + " INT, "
-					+ MsgInfo.COL_ISSEND + " INT, "
-					+ MsgInfo.COL_ISSHOWTIMER + " INTEGER, "
-					+ MsgInfo.COL_CREATETIME + " INTEGER, "
-					+ MsgInfo.COL_TALKER + " TEXT, "
-					+ MsgInfo.COL_CONTENT + " TEXT, "
-					+ MsgInfo.COL_IMGPATH + " TEXT, "
-					+ MsgInfo.COL_RESERVED + " TEXT, "
-					+ MsgInfo.COL_LVBUFFER + " BLOB )",
-
-			"CREATE INDEX IF NOT EXISTS " + " tmessageSvrIdIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_MSGSVRID + " )",
-
-			"CREATE INDEX IF NOT EXISTS " + " tmessageTalkerIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_TALKER + " )" ,
-
-			"CREATE INDEX IF NOT EXISTS " + " tmessageTalerStatusIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_STATUS + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " tmessageCreateTimeIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_CREATETIME + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " tmessageCreateTaklerTimeIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_CREATETIME + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " tmessageSendCreateTimeIndex ON " + MsgInfo.TMSG_TABLE + " ( " + MsgInfo.COL_STATUS + "," + MsgInfo.COL_ISSEND + "," + MsgInfo.COL_CREATETIME + " )" ,
-			
-			// BOTTLE_MSG_TABLE
-			"CREATE TABLE IF NOT EXISTS " + MsgInfo.BOTTLE_MSG_TABLE + " ( "
-					+ MsgInfo.COL_MSGID + " INTEGER PRIMARY KEY, "
-					+ MsgInfo.COL_MSGSVRID + " INTEGER , "
-					+ MsgInfo.COL_TYPE + " INT, "
-					+ MsgInfo.COL_STATUS + " INT, "
-					+ MsgInfo.COL_ISSEND + " INT, "
-					+ MsgInfo.COL_ISSHOWTIMER + " INTEGER, "
-					+ MsgInfo.COL_CREATETIME + " INTEGER, "
-					+ MsgInfo.COL_TALKER + " TEXT, "
-					+ MsgInfo.COL_CONTENT + " TEXT, "
-					+ MsgInfo.COL_IMGPATH + " TEXT, "
-					+ MsgInfo.COL_RESERVED + " TEXT, "
-					+ MsgInfo.COL_LVBUFFER + " BLOB )",
-
-			"CREATE INDEX IF NOT EXISTS " + " bmessageSvrIdIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_MSGSVRID + " )",
-
-			"CREATE INDEX IF NOT EXISTS " + " bmessageTalkerIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_TALKER + " )" ,
-
-			"CREATE INDEX IF NOT EXISTS " + " bmessageTalerStatusIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_STATUS + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " bmessageCreateTimeIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_CREATETIME + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " bmessageCreateTaklerTimeIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_TALKER + "," + MsgInfo.COL_CREATETIME + " )" ,
-			
-			"CREATE INDEX IF NOT EXISTS " + " bmessageSendCreateTimeIndex ON " + MsgInfo.BOTTLE_MSG_TABLE + " ( " + MsgInfo.COL_STATUS + "," + MsgInfo.COL_ISSEND + "," + MsgInfo.COL_CREATETIME + " )" ,
 	};
 
 	// message event
@@ -273,19 +191,12 @@ public class MsgInfoStorage extends MStorage {
 		this.db = db;
 
 		tryAddDBCol(db,MsgInfo.MMSG_TABLE );
-		tryAddDBCol(db,MsgInfo.QMSG_TABLE );
-		tryAddDBCol(db,MsgInfo.TMSG_TABLE );
-		tryAddDBCol(db,MsgInfo.BOTTLE_MSG_TABLE );
 		
 		if (lstTable == null) {
 			lstTable = new LinkedList<MsgTable>();
 		}
 		lstTable.clear();
 		lstTable.add(new MsgTable(FILTER_MMSG, MsgInfo.MMSG_TABLE, MsgInfo.MMSG_ID_MIN_VALUE, MsgInfo.MMSG_ID_MAX_VALUE));
-		lstTable.add(new MsgTable(FILTER_QMSG, MsgInfo.QMSG_TABLE, MsgInfo.QMSG_ID_MIN_VALUE, MsgInfo.QMSG_ID_MAX_VALUE));
-		lstTable.add(new MsgTable(FILTER_TMSG, MsgInfo.TMSG_TABLE, MsgInfo.TMSG_ID_MIN_VALUE, MsgInfo.TMSG_ID_MAX_VALUE));
-		lstTable.add(new MsgTable(FILTER_BOTTLEMSG, MsgInfo.BOTTLE_MSG_TABLE, MsgInfo.BOTTLE_MSG_ID_MIN_VALUE,
-				MsgInfo.BOTTLE_MSG_ID_MAX_VALUE));
 
 		for (int i = 0; i < lstTable.size(); i++) {
 			final Cursor cu = this.db.rawQuery("select max(msgid) from " + lstTable.get(i).getName(), null);
@@ -317,7 +228,7 @@ public class MsgInfoStorage extends MStorage {
 	// 通过本地id获取
 	public MsgInfo getBySvrId(final String talker, final int uid) {
 		final MsgInfo msg = new MsgInfo();
-		final Cursor cu = db.query(getTableNameByTalker(talker), null, MsgInfo.COL_MSGSVRID + "=?", new String[] { ""
+		final Cursor cu = db.query(getTableNameByTalker(), null, MsgInfo.COL_MSGSVRID + "=?", new String[] { ""
 				+ uid }, null, null, null);
 		if (cu.getCount() != 0) {
 			cu.moveToFirst();
@@ -329,7 +240,7 @@ public class MsgInfoStorage extends MStorage {
 	
 	public MsgInfo getByCreateTime(final String talker, final long time) {
 		final MsgInfo msg = new MsgInfo();
-		final Cursor cu = db.query(getTableNameByTalker(talker), null, MsgInfo.COL_CREATETIME + "=?", new String[] { ""
+		final Cursor cu = db.query(getTableNameByTalker(), null, MsgInfo.COL_CREATETIME + "=?", new String[] { ""
 				+ time }, null, null, null);
 		if (cu.getCount() != 0) {
 			cu.moveToFirst();
@@ -350,7 +261,7 @@ public class MsgInfoStorage extends MStorage {
 		return (msg != null) && (msg.getMsgId() > 0);
 	}
 	public int getPositionByCreateTime(final String talker, final long time,int from) {
-		final String sql = "SELECT * FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER + "= '"
+		final String sql = "SELECT * FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER + "= '"
 			+ Util.escapeSqlValue(talker) + "' AND "+MsgInfo.COL_CREATETIME+" < "+time+" ORDER BY " + MsgInfo.COL_CREATETIME + " ASC LIMIT -1 OFFSET " + from;
 
 		
@@ -370,7 +281,7 @@ public class MsgInfoStorage extends MStorage {
 	public MsgInfo getLastSvrMsg(final String talker) {
 		// CodeInfo.TestTime t = new CodeInfo.TestTime();
 		final MsgInfo msg = new MsgInfo();
-		final Cursor cu = db.query(getTableNameByTalker(talker), null, MsgInfo.COL_TALKER + "=?", new String[] { ""
+		final Cursor cu = db.query(getTableNameByTalker(), null, MsgInfo.COL_TALKER + "=?", new String[] { ""
 				+ talker }, null, null, MsgInfo.COL_MSGSVRID + "  DESC limit 1 ");
 		if (cu.getCount() != 0) {
 			cu.moveToFirst();
@@ -390,7 +301,7 @@ public class MsgInfoStorage extends MStorage {
 		}
 		// CodeInfo.TestTime t = new CodeInfo.TestTime();
 		final MsgInfo msg = new MsgInfo();
-		final String sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+		final String sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 				+ Util.escapeSqlValue(talker) + "'  order by " + MsgInfo.COL_CREATETIME + " DESC limit 1";
 		final Cursor cu = db.rawQuery(sql, null);
 
@@ -415,7 +326,7 @@ public class MsgInfoStorage extends MStorage {
 		}
 		// CodeInfo.TestTime t = new CodeInfo.TestTime();
 		final MsgInfo msg = new MsgInfo();
-		final String sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+		final String sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 				+ Util.escapeSqlValue(talker) + "' " + filterSql + " order by " + MsgInfo.COL_CREATETIME + " DESC limit 1";
 		final Cursor cu = db.rawQuery(sql, null);
 
@@ -437,7 +348,7 @@ public class MsgInfoStorage extends MStorage {
 		}
 		// CodeInfo.TestTime t = new CodeInfo.TestTime();
 		final MsgInfo msg = new MsgInfo();
-		final String sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+		final String sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 				+ Util.escapeSqlValue(talker) + "' and" + " " + MsgInfo.COL_ISSEND + " = " + MsgInfo.RECEIVER
 				+ "  order by " + MsgInfo.COL_CREATETIME + " DESC limit 1";
 		final Cursor cu = db.rawQuery(sql, null);
@@ -516,7 +427,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	/*
-	 * public long getEarliestUnreadEmojiMsgId(final String talker) { String sql = "select min(" + MsgInfo.COL_ID + ") from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '" + Util.escapeSqlValue(talker) + "' AND "
+	 * public long getEarliestUnreadEmojiMsgId(final String talker) { String sql = "select min(" + MsgInfo.COL_ID + ") from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '" + Util.escapeSqlValue(talker) + "' AND "
 	 * + MsgInfo.COL_TYPE + " = " + ConstantsProtocal.MM_DATA_EMOJI + " AND " + MsgInfo.COL_CONTENT + " = '" + EmojiInfo.GAME_NOT_PLAY + "'";
 	 * 
 	 * long id = 0; Cursor cu = db.rawQuery(sql, null); if (cu.getCount() == 1) { cu.moveToFirst(); id = cu.getLong(0); } cu.close();
@@ -644,7 +555,7 @@ public class MsgInfoStorage extends MStorage {
 		Assert.assertTrue(lstTable != null);
 
 		Cursor cu = null;
-		final String sql = "SELECT * FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER + " = '"
+		final String sql = "SELECT * FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER + " = '"
 				+ Util.escapeSqlValue(talker) + "' " + " AND " + MsgInfo.COL_ISSEND + " = " + MsgInfo.RECEIVER
 				+ " ORDER BY " + MsgInfo.COL_CREATETIME + " DESC LIMIT " + limit;
 
@@ -663,7 +574,15 @@ public class MsgInfoStorage extends MStorage {
 		return listMsg;
 	}
 
-	/*
+	/**
+	 * 可以参考com.tencent.mm.modelmulti.NetSceneSendMsg类
+	 * final MsgInfo msg = new MsgInfo();</br>
+	 * msg.setStatus(MsgInfo.STATE_SENDING);</br>
+	 * msg.setTalker(toUserName);</br>
+	 * msg.setCreateTime(MsgInfoStorageLogic.fixSendMsgCreateTime(toUserName));</br>
+	 * msg.setIsSend(MsgInfo.SENDER);</br>
+	 * msg.setContent(content);</br>
+	 * msg.setType(ContactStorageLogic.getTypeTextFromUserName(toUserName));</br>
 	 * @return 本地自动生产的id
 	 */
 	public long insert(final MsgInfo message) {
@@ -671,7 +590,7 @@ public class MsgInfoStorage extends MStorage {
 		// 插入一条消息时，可能发送人还没有(创建多人会话时)，故要先进行判断.
 		if (message.getTalker() != null && message.getTalker().length() > 0) {
 
-			MsgTable table = getTableByTalker(message.getTalker());
+			MsgTable table = getTableByTalker();
 			Assert.assertTrue(table != null);
 			message.setMsgId(table.getMsgLocalId());
 			table.incMsgLocalId(); // 插入一条新消息，必须自增msg local id
@@ -778,13 +697,13 @@ public class MsgInfoStorage extends MStorage {
 
 		String sql = null;
 		if (forward) {
-			sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+			sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 					+ Util.escapeSqlValue(talker) + "' AND "
 					+ getImgTypeSql()
 					+ " AND " + MsgInfo.COL_CREATETIME + " > " + currentCreateTime + "  order by "
 					+ MsgInfo.COL_CREATETIME + " ASC limit " + limit;
 		} else {
-			sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+			sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 					+ Util.escapeSqlValue(talker) + "' AND "
 					+ getImgTypeSql()
 					+ " AND " + MsgInfo.COL_CREATETIME + " < " + currentCreateTime + "  order by "
@@ -819,7 +738,7 @@ public class MsgInfoStorage extends MStorage {
 
 	// 根据服务器id删除
 	public int deleteBySvrID(final String talker, final int uid) {
-		final int result = db.delete(getTableNameByTalker(talker), MsgInfo.COL_MSGSVRID + "=?", new String[] { "" + uid });
+		final int result = db.delete(getTableNameByTalker(), MsgInfo.COL_MSGSVRID + "=?", new String[] { "" + uid });
 		if (result != 0) {
 			doNotify();
 			addEvent(new NotifyInfo(talker, "delete", null));
@@ -830,7 +749,7 @@ public class MsgInfoStorage extends MStorage {
 
 	// 根据本地talker删除 (仅供ConversationStg.delContactMsg or delChatContact调用)
 	public int deleteByTalker(final String talker) {
-		final int result = db.delete(getTableNameByTalker(talker), MsgInfo.COL_TALKER + "=?", new String[] { ""
+		final int result = db.delete(getTableNameByTalker(), MsgInfo.COL_TALKER + "=?", new String[] { ""
 				+ talker });
 		if (result != 0) {
 			doNotify();
@@ -842,7 +761,7 @@ public class MsgInfoStorage extends MStorage {
 	public int deleteByTalkerFrom(final String talker, final int maxMsgId) {
 		final MsgInfo msg = getBySvrId(talker, maxMsgId);
 		Assert.assertTrue(talker.equals(msg.getTalker()));
-		final int result = db.delete(getTableNameByTalker(talker), MsgInfo.COL_CREATETIME + "<=? AND "
+		final int result = db.delete(getTableNameByTalker(), MsgInfo.COL_CREATETIME + "<=? AND "
 				+ MsgInfo.COL_TALKER + "=?", new String[] { "" + msg.getCreateTime(), talker });
 		if (result != 0) {
 			doNotify();
@@ -852,7 +771,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	public boolean deleteMessageEndByName(String nameTag) {
-		final boolean result = db.execSQL(getTableNameByTalker(nameTag), "delete from " + getTableNameByTalker(nameTag)
+		final boolean result = db.execSQL(getTableNameByTalker(), "delete from " + getTableNameByTalker()
 				+ " where talker like '%" + nameTag + "'");
 		if (result) {
 			doNotify();
@@ -863,7 +782,7 @@ public class MsgInfoStorage extends MStorage {
 	public Cursor getByTalkFrom(final String talker, final int maxMsgId) {
 		final MsgInfo msg = getBySvrId(talker, maxMsgId);
 		Assert.assertTrue(talker.equals(msg.getTalker()));
-		return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_CREATETIME + "<=? AND " + MsgInfo.COL_TALKER
+		return db.query(getTableNameByTalker(), null, MsgInfo.COL_CREATETIME + "<=? AND " + MsgInfo.COL_TALKER
 				+ "=?", new String[] { "" + msg.getCreateTime() }, null, null, null);
 	}
 
@@ -874,6 +793,11 @@ public class MsgInfoStorage extends MStorage {
 		}
 	}
 
+	/**
+	 * 通过ID更新消息
+	 * @param id
+	 * @param msg
+	 */
 	public void updateById(final long id, final MsgInfo msg) {
 		final int result = db.update(getTableNameByLocalId(id), msg.convertTo(), MsgInfo.COL_MSGID + "=?",
 				new String[] { "" + id });
@@ -906,7 +830,7 @@ public class MsgInfoStorage extends MStorage {
 
 	public void updateBySvrId(final int uid, final MsgInfo msg) {
 		Assert.assertTrue("no talker set when update by svrid", Util.nullAsNil(msg.getTalker()).length() > 0);
-		final int result = db.update(getTableNameByTalker(msg.getTalker()), msg.convertTo(), MsgInfo.COL_MSGSVRID + "=?",
+		final int result = db.update(getTableNameByTalker(), msg.convertTo(), MsgInfo.COL_MSGSVRID + "=?",
 				new String[] { "" + uid });
 		if (result != 0) {
 			doNotify();
@@ -917,7 +841,7 @@ public class MsgInfoStorage extends MStorage {
 	public int updateUnreadByTalker(final String talker) {
 		final ContentValues values = new ContentValues();
 		values.put(MsgInfo.COL_STATUS, MsgInfo.STATE_READ);
-		final int result = db.update(getTableNameByTalker(talker), values, MsgInfo.COL_TALKER + "=? AND "
+		final int result = db.update(getTableNameByTalker(), values, MsgInfo.COL_TALKER + "=? AND "
 				+ MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_STATUS + "!=? ", new String[] { talker,
 				"" + MsgInfo.RECEIVER, "" + MsgInfo.STATE_READ });
 		if (result != 0) {
@@ -934,19 +858,19 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	public Cursor getCursor(final String talker) {
-		return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_TALKER + "=?", new String[] { talker }, null,
+		return db.query(getTableNameByTalker(), null, MsgInfo.COL_TALKER + "=?", new String[] { talker }, null,
 				null, MsgInfo.COL_CREATETIME + " ASC ");
 	}
 	
 	public Cursor getCursor(final String talker, final String filter){
-		String sql = "SELECT * FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER + "= '" + Util.escapeSqlValue(talker) 
+		String sql = "SELECT * FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER + "= '" + Util.escapeSqlValue(talker) 
 				+ "' AND " + MsgInfo.COL_CONTENT + " LIKE '%" + filter + "%' AND " + MsgInfo.COL_TYPE + " = 1";
 		sql += " ORDER BY "  + MsgInfo.COL_CREATETIME + " ASC";		
 		return db.rawQuery(sql, null);
 	}
 
 	public Cursor getCursor(final String talker, final int from) {
-		final String sql = "SELECT * FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER + "= '"
+		final String sql = "SELECT * FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER + "= '"
 				+ Util.escapeSqlValue(talker) + "' ORDER BY " + MsgInfo.COL_CREATETIME + " ASC LIMIT -1 OFFSET " + from;
 
 		Log.d(TAG, "getCursor talk:" + talker + " from:" + from + " [" + sql + "]");
@@ -954,7 +878,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 	
 	public Cursor getCursor(final String talker, final long msgLocalId, final long lastMsgId, final int limit, final int from, final boolean up){
-		String sql = "SELECT * FROM " + getTableNameByTalker(talker) + " WHERE "  + MsgInfo.COL_TALKER + "= '"
+		String sql = "SELECT * FROM " + getTableNameByTalker() + " WHERE "  + MsgInfo.COL_TALKER + "= '"
 				+Util.escapeSqlValue(talker) + "' AND ";
 		
 		if (up) {
@@ -976,13 +900,13 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	public Cursor getCursorUnread(final String talker) {
-		return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
+		return db.query(getTableNameByTalker(), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
 				+ "=? AND " + MsgInfo.COL_STATUS + "!=?", new String[] { "" + MsgInfo.RECEIVER, talker,
 				"" + MsgInfo.STATE_READ }, null, null, null);
 	}
 	
 	public Cursor getCursorUnread(final String talker, final int limitCount) {
-		return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
+		return db.query(getTableNameByTalker(), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
 				+ "=? AND " + MsgInfo.COL_STATUS + "!=?" + " limit " + limitCount, new String[] { "" + MsgInfo.RECEIVER, talker,
 			"" + MsgInfo.STATE_READ }, null, null, null);
 	}
@@ -995,7 +919,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 	
 	public Cursor getCursorUnread(final String talker, final long afterTime) {
-		return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
+		return db.query(getTableNameByTalker(), null, MsgInfo.COL_ISSEND + "=? AND " + MsgInfo.COL_TALKER
 				+ "=? AND " + MsgInfo.COL_STATUS + "!=? AND " + MsgInfo.COL_CREATETIME + ">=?", new String[] { "" + MsgInfo.RECEIVER, talker,
 				"" + MsgInfo.STATE_READ, "" + afterTime }, null, null, null);
 	}
@@ -1042,7 +966,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	public int getMsgCount(String talker) {
-		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER
+		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER
 				+ "='" + Util.escapeSqlValue(talker) + "'";
 		final Cursor cu = db.rawQuery(sql, null);
 		int count = 0;
@@ -1054,7 +978,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 
 	public int getMsgCount(String talker, int msgType) {
-		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER
+		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER
 				+ "='" + Util.escapeSqlValue(talker) + "' AND " + MsgInfo.COL_TYPE + " = " + msgType;
 		final Cursor cu = db.rawQuery(sql, null);
 		int count = 0;
@@ -1066,7 +990,7 @@ public class MsgInfoStorage extends MStorage {
 	}
 	
 	public int getMsgCount(String talker, long localMsgId, boolean up){
-		String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER
+		String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER
 				+ "='" + Util.escapeSqlValue(talker) + "' AND " + MsgInfo.COL_MSGID;
 		if (up) {
 			sql += " <=" + localMsgId;
@@ -1086,7 +1010,7 @@ public class MsgInfoStorage extends MStorage {
 	 * Note：返回的List包含三种图片类型，普通图片、qq离线消息图片和私信图片
 	 */
 	public int getImgMsgCount(String talker) {
-		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker(talker) + " WHERE "
+		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker() + " WHERE "
 				+ MsgInfo.COL_TALKER + "='" + Util.escapeSqlValue(talker) + "' AND "
 				+ getImgTypeSql();
 				
@@ -1109,7 +1033,7 @@ public class MsgInfoStorage extends MStorage {
 			return 0;
 		}
 
-		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker(talker) + " WHERE " + MsgInfo.COL_TALKER
+		final String sql = "SELECT COUNT(*) FROM " + getTableNameByTalker() + " WHERE " + MsgInfo.COL_TALKER
 				+ "='" + Util.escapeSqlValue(talker) + "' AND "
 				+ getImgTypeSql()
 				+ " AND " + MsgInfo.COL_CREATETIME + " < " + msg.getCreateTime();
@@ -1134,7 +1058,7 @@ public class MsgInfoStorage extends MStorage {
 		 * String sql = "delete from " + MsgInfo.TABLE + " where " + MsgInfo.COL_ID + " in (" + "select " + MsgInfo.COL_ID + " from " + MsgInfo.TABLE + " where " + "( strftime(\"%s\",\"now\") - " + MsgInfo.COL_CREATE_TIME +"/1000  > " +
 		 * secondLast +") " + "and talker=\"" + Util.escapeSqlValue(talker) + "\" order by " + MsgInfo.COL_CREATE_TIME + " desc limit -1 offset " + leftMinCount + ")  ";
 		 */
-		String sql = "select " + MsgInfo.COL_CREATETIME + " from " + getTableNameByTalker(talker) + " where "
+		String sql = "select " + MsgInfo.COL_CREATETIME + " from " + getTableNameByTalker() + " where "
 				+ "talker=\"" + Util.escapeSqlValue(talker) + "\" order by " + MsgInfo.COL_CREATETIME
 				+ " desc limit -1 offset " + leftMinCount;
 
@@ -1158,17 +1082,16 @@ public class MsgInfoStorage extends MStorage {
 		}
 
 		Log.d(TAG, "deleteOldMsgByTalker get max time :" + max);
-		// sql = "delete from " + getTableNameByTalker(talker) + " where ( talker=\"" + Util.escapeSqlValue(talker) + "\"" + ") and (" + MsgInfo.COL_CREATE_TIME + " < " + max + ");";
+		// sql = "delete from " + getTableNameByTalker() + " where ( talker=\"" + Util.escapeSqlValue(talker) + "\"" + ") and (" + MsgInfo.COL_CREATE_TIME + " < " + max + ");";
 		// Log.d(TAG, "[" + sql + "]");
 
-		int res = db.delete(getTableNameByTalker(talker), "( talker=\"" + Util.escapeSqlValue(talker) + "\""
+		int res = db.delete(getTableNameByTalker(), "( talker=\"" + Util.escapeSqlValue(talker) + "\""
 				+ ") and (" + MsgInfo.COL_CREATETIME + " < " + max + ")", null);
 		Log.d(TAG, "deleted message count:" + res);
 	}
 
-	private String getTableNameByTalker(String username) {
-		Assert.assertTrue(username != null && username.length() > 0);
-		return getTableByTalker(username).getName();
+	private String getTableNameByTalker() {
+		return getTableByTalker().getName();
 	}
 
 	private MsgTable getTableByTableName(final String tableName) {
@@ -1182,9 +1105,8 @@ public class MsgInfoStorage extends MStorage {
 		return null;
 	}
 
-	private MsgTable getTableByTalker(String username) {
-		Assert.assertTrue(username != null && username.length() > 0);
-		return getTableByTableName(MsgInfo.getTableByTalker(username));
+	private MsgTable getTableByTalker() {
+		return getTableByTableName(MsgInfo.getTableByTalker());
 	}
 	
 	public boolean isLocalIdInSession(final long id) {
@@ -1385,7 +1307,7 @@ public class MsgInfoStorage extends MStorage {
 		if (Util.isNullOrNil(talker)) {
 			return -1;
 		}
-		MsgTable table = getTableByTalker(talker);
+		MsgTable table = getTableByTalker();
 		Assert.assertTrue(table != null);
 		long msgId = table.getMsgLocalId();
 		table.incMsgLocalId(); // 插入一条新消息，必须自增msg local id
@@ -1465,7 +1387,7 @@ public class MsgInfoStorage extends MStorage {
 					null, sortOrder);
 		} else if (selection.startsWith(MsgInfo.COL_TALKER)) {
 			String talker = selectionArgs[0];
-			return db.query(getTableNameByTalker(talker), null, MsgInfo.COL_TALKER + "=?",
+			return db.query(getTableNameByTalker(), null, MsgInfo.COL_TALKER + "=?",
 					new String[] { "" + talker }, null, null, sortOrder);
 		}
 		return null;
@@ -1478,7 +1400,7 @@ public class MsgInfoStorage extends MStorage {
 			return null;
 		}
 		
-		final String sql = "select * from " + getTableNameByTalker(talker) + " where " + MsgInfo.COL_TALKER + " = '"
+		final String sql = "select * from " + getTableNameByTalker() + " where " + MsgInfo.COL_TALKER + " = '"
 				+ Util.escapeSqlValue(talker) + "'  order by " + MsgInfo.COL_CREATETIME + " DESC limit " + limit;
 		
 		Cursor cursor = db.rawQuery(sql, null);

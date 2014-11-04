@@ -481,8 +481,8 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 	protected void onNetworkChanged(NetworkInfo info) {
 		for (IMessageListener_AIDL listener : messageListeners) {
 			try {
-				listener.onNetworkChanged(SerializerUtil.serialize(info));
-			} catch (RemoteException | IOException e) {
+				listener.onNetworkChanged(info);
+			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
@@ -647,7 +647,7 @@ public class MessageConnectorManager extends IMessageEvent_AIDL.Stub {
 	public String getCookieValue() throws RemoteException {
 		//93af05e5f6cb83a1  1000
 		//433bda476576992d	1001
-		this.mCookieValue="93af05e5f6cb83a1";
+		this.mCookieValue="433bda476576992d";
 		return this.mCookieValue;
 	}
 

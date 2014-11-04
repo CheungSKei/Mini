@@ -37,7 +37,7 @@ public class Log {
 	public static final int LEVEL_FATAL = 5;
 	public static final int LEVEL_NONE = 6;
 
-	private static int level = LEVEL_NONE;
+	private static int level = LEVEL_VERBOSE;
 
 	private static PrintStream p;
 	private static byte[] desKey = null;

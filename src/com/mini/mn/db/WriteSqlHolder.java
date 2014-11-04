@@ -10,7 +10,7 @@ import com.mini.mn.util.Util;
 import android.content.ContentValues;
 
 public class WriteSqlHolder {
-	private static final String TAG = "MicroMsg.MemoryStorage.Holder";
+	private static final String TAG = "MiniMsg.MemoryStorage.Holder";
 
 	public static final int SYNC_TYPE_NO_CACHE = 1;
 	public static final int SYNC_TYPE_IN_TRANS = 2;

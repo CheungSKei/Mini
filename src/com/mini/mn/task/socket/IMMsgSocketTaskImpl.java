@@ -41,7 +41,7 @@ public class IMMsgSocketTaskImpl extends BaseSocketTask {
 		data.put("toUsername", toUsername);
 		data.put("content", content);
 		data.put("secretContent", secretContent);
-		commit(Constants.IMCmd.IM_TEXT_CMD, msgId, data);
+		setValue(Constants.IMCmd.IM_TEXT_CMD, msgId, data);
 	}
 
 }

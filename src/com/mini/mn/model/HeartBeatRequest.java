@@ -1,5 +1,7 @@
 package com.mini.mn.model;
 
+import android.os.Parcel;
+
 import com.mini.mn.model.Entity.Builder;
 
 /**
@@ -45,4 +47,12 @@ public class HeartBeatRequest extends Entity implements Builder{
 		this.cookieValue = cookieValue;
 	}
 
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(cmd);
+		dest.writeString(from);
+		dest.writeString(type);
+		dest.writeString(cookieValue);
+		super.writeToParcel(dest, flags);
+	}
 }

@@ -1,5 +1,7 @@
 package com.mini.mn.model;
 
+import android.os.Parcel;
+
 import com.mini.mn.model.Entity.Builder;
 
 /**
@@ -44,4 +46,12 @@ public class HeartBeatResponse extends Entity implements Builder{
 		this.code = code;
 	}
 
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(cmd);
+		dest.writeString(from);
+		dest.writeString(type);
+		dest.writeString(code);
+		super.writeToParcel(dest, flags);
+	}
 }

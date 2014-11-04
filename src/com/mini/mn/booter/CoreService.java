@@ -42,14 +42,11 @@ public class CoreService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-    	if(intent!=null)
+    	String host = Constants.MESSAGE_SERVER_HOST;
+    	int port = Constants.MESSAGE_SERVER_PORT;
+    	if(host!=null)
     	{
-	    	String host = Constants.MESSAGE_SERVER_HOST;
-	    	int port = Constants.MESSAGE_SERVER_PORT;
-	    	if(host!=null)
-	    	{
-	    		connect(host,port);
-	    	}
+    		connect(host,port);
     	}
     }
    

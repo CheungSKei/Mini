@@ -11,7 +11,6 @@ import android.database.Cursor;
 
 public abstract class BaseMsgInfo extends IAutoDBItem {
 
-	private static final String TAG = "Mini.BaseMsgInfo";
 	public static final String TABLE_NAME = "MsgInfo";
 	public static final String[] INDEX_CREATE = new String[0];
 	public static final String COL_MSGID = "msgId";
@@ -227,7 +226,7 @@ public abstract class BaseMsgInfo extends IAutoDBItem {
 		}
 		catch (Exception e)
 		{
-			Log.e("MicroMsg.SDK.BaseMsgInfo", "get value failed");
+			Log.e("MiniMsg.SDK.BaseMsgInfo", "get value failed");
 			e.printStackTrace();
 		}
 	}

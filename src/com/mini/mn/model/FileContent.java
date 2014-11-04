@@ -2,6 +2,8 @@ package com.mini.mn.model;
 
 import java.io.File;
 
+import android.os.Parcel;
+
 import com.mini.mn.model.Entity.Builder;
 
 
@@ -72,4 +74,12 @@ public class FileContent extends Entity implements Builder {
         this.fileContent = fileContent;
     }
 
+    @Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(fileName);
+		dest.writeInt(fileNameLength);
+		dest.writeInt(fileLength);
+		dest.writeSerializable(fileContent);
+		super.writeToParcel(dest, flags);
+	}
 }

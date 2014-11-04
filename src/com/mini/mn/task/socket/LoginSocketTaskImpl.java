@@ -35,7 +35,7 @@ public class LoginSocketTaskImpl extends BaseSocketTask {
 		data.put("username", username);
 		data.put("password", password);
 		data.put("confirmPassword", confirmPassword);
-		commit(Constants.IMCmd.IM_LOGIN_CMD, msgId, data);
+		setValue(Constants.IMCmd.IM_LOGIN_CMD, msgId, data);
 	}
 
 }

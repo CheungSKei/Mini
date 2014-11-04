@@ -2,16 +2,15 @@ package com.mini.mn.db.storage;
 
 import java.util.Map;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.text.TextUtils;
+
 import com.mini.mn.constant.ConstantsProtocal;
 import com.mini.mn.db.message.RMsgInfo;
 import com.mini.mn.platformtools.KVConfig;
 import com.mini.mn.util.Log;
 import com.mini.mn.util.Util;
-
-import junit.framework.Assert;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.text.TextUtils;
 
 public class MsgInfo extends RMsgInfo {
 	private static final String TAG = "MiniMsg.MsgInfo";
@@ -1165,33 +1164,7 @@ public class MsgInfo extends RMsgInfo {
 	public static final long MMSG_ID_MIN_VALUE = BASE_INCREMENT;
 	public static final long MMSG_ID_MAX_VALUE = SEQUENCE_INCREMENT_FOR_MMSG;
 
-	public static final String QMSG_TABLE = "qmessage";
-	// private static final int QMSG_TABLE_ID = BASE_INCREMENT + MMSG_TABLE_ID;
-	public static final long QMSG_ID_MIN_VALUE = BASE_INCREMENT + MMSG_ID_MAX_VALUE;
-	public static final long QMSG_ID_MAX_VALUE = SEQUENCE_INCREMENT_FOR_NOT_MMSG + MMSG_ID_MAX_VALUE;
-
-	public static final String TMSG_TABLE = "tmessage";
-	// private static final int TMSG_TABLE_ID = BASE_INCREMENT + QMSG_TABLE_ID;
-	public static final long TMSG_ID_MIN_VALUE = BASE_INCREMENT + QMSG_ID_MAX_VALUE;
-	public static final long TMSG_ID_MAX_VALUE = SEQUENCE_INCREMENT_FOR_NOT_MMSG + QMSG_ID_MAX_VALUE;
-
-	public static final String BOTTLE_MSG_TABLE = "bottlemessage";
-	public static final long BOTTLE_MSG_ID_MIN_VALUE = BASE_INCREMENT + TMSG_ID_MAX_VALUE;
-	public static final long BOTTLE_MSG_ID_MAX_VALUE = SEQUENCE_INCREMENT_FOR_NOT_MMSG + TMSG_ID_MAX_VALUE;
-
-	public static String getTableByTalker(String username) {
-		Assert.assertTrue(username != null && username.length() > 0);
-		if (username.endsWith(ConstantsStorage.TAG_MICROBLOG_TENCENT)) {
-			return TMSG_TABLE;
-		}
-		if (username.endsWith(ConstantsStorage.TAG_QQ)) {
-			return QMSG_TABLE;
-		}
-
-//		if (Contact.isBottleContact(username)) {
-//			return BOTTLE_MSG_TABLE;
-//		}
-
+	public static String getTableByTalker() {
 		return MMSG_TABLE;
 	}
 }

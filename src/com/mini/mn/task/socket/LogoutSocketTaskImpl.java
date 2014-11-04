@@ -29,7 +29,7 @@ public class LogoutSocketTaskImpl extends BaseSocketTask {
 	 */
 	public void commit(long msgId) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		commit(Constants.IMCmd.IM_LOGOUT_CMD, msgId, data);
+		setValue(Constants.IMCmd.IM_LOGOUT_CMD, msgId, data);
 	}
 
 }

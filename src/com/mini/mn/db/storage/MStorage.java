@@ -4,6 +4,7 @@ import android.os.Looper;
 
 /**
  * basic storage class with simple event support
+ * 用于创建各个表的基类,同时提供简单事件处理
  * 
  * @author kirozhao
  * 

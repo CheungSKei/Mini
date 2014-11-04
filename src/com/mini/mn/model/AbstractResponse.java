@@ -2,6 +2,8 @@ package com.mini.mn.model;
 
 import java.util.Map;
 
+import android.os.Parcel;
+
 import com.mini.mn.model.Entity.Builder;
 /**
  * 服务器返回数据结构
@@ -102,5 +104,17 @@ public class AbstractResponse extends Entity implements Builder {
 
 	public void setMsgSvrId(long msgSvrId) {
 		this.msgSvrId = msgSvrId;
+	}
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(timestamp);
+		dest.writeString(cmd);
+		dest.writeString(code);
+		dest.writeString(resMsg);
+		dest.writeMap(data);
+		dest.writeLong(msgId);
+		dest.writeLong(msgSvrId);
+		super.writeToParcel(dest, flags);
 	}
 }

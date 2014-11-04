@@ -101,11 +101,7 @@ public abstract class MessageListener extends IMessageListener_AIDL.Stub impleme
 	}
 
 	@Override
-	public void onNetworkChanged(byte[] info) throws RemoteException {
-		try {
-			onNetworkChanged((NetworkInfo)SerializerUtil.deserialize(info));
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
-		}
+	public void onNetworkChanged(NetworkInfo info){
+		onNetworkChanged(info);
 	}
 }

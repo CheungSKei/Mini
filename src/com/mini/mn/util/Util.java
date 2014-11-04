@@ -2528,4 +2528,27 @@ public final class Util {
 
 		return phoneNum;
 	}
+	
+	public static String getDeviceId(final Context context) {
+		if (context == null) {
+			return null;
+		}
+
+		try {
+			final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+			if (tm == null) {
+				return null;
+			}
+			final String deviceId = tm.getDeviceId();
+			return deviceId == null ? null : deviceId.trim();
+
+		} catch (final SecurityException e) {
+			Log.e(TAG, "getDeviceId failed, security exception");
+
+		} catch (final Exception ignore) {
+			ignore.printStackTrace();
+		}
+
+		return null;
+	}
 }

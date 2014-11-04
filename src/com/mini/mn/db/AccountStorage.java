@@ -13,11 +13,15 @@ import com.mini.mn.algorithm.FileOperation;
 import com.mini.mn.algorithm.MD5;
 import com.mini.mn.app.MiniApplication;
 import com.mini.mn.app.MiniApplicationContext;
+import com.mini.mn.compatible.DeviceInfo;
 import com.mini.mn.constant.ConstantsProtocal;
 import com.mini.mn.db.MemoryStorage.IOnAttachTable;
 import com.mini.mn.db.SqliteDB.IFactory;
+import com.mini.mn.db.storage.ConfigStorage;
 import com.mini.mn.db.storage.ConstantsStorage;
+import com.mini.mn.db.storage.MStorage;
 import com.mini.mn.db.storage.MsgInfoStorage;
+import com.mini.mn.db.storage.ServerConfigInfoStorage;
 import com.mini.mn.platformtools.FilesCopy;
 import com.mini.mn.util.DeviceUtils;
 import com.mini.mn.util.Log;
@@ -67,11 +71,16 @@ public class AccountStorage implements IAccountStorage {
 	private static final String STORAGE_CARD_PACKAGE = "card/";
 	private static final String STORAGE_REC_BIZ = "recbiz/";
 	private static final String STORAGE_SPEEX_TEMP = "speextemp/";
-
+	// 消息表
 	private MsgInfoStorage msgStg;
-
+	// 数据库操作类
 	private SqliteDB dataDB = null;
+	// 内存表
 	private MemoryStorage memDB = null;
+	
+	private ConfigStorage userConfigStg;
+	
+	private ServerConfigInfoStorage svrCfgInfoStg;
 
 	private int uin = ConstantsProtocal.MM_INVALID_UIN;
 	private String sysPath;
@@ -128,7 +137,6 @@ public class AccountStorage implements IAccountStorage {
 	 */
 	public boolean isSDCardAvailable() {
 		boolean bRet = Util.isSDCardAvail();
-		// Log.d(TAG ,"dksdcard isSDCardAvailable:" + bRet + " stack:" + com.tencent.mm.sdk.platformtools.Util.getStack());
 		if (!bRet) {
 			return bRet;
 		}
@@ -482,7 +490,19 @@ public class AccountStorage implements IAccountStorage {
 		if(!Util.isNullOrNil(initDbErrMsg)){
 			Log.e(TAG ,"dbinit failed :" + initDbErrMsg);
 		}
+		
+		userConfigStg = new ConfigStorage(dataDB);
 
+		svrCfgInfoStg = new ServerConfigInfoStorage(userConfigStg);
+		svrCfgInfoStg.add(new MStorage.IOnStorageChange() {
+
+			@Override
+			public void onNotifyChange(String deviceInfo) {
+
+				DeviceInfo.update(deviceInfo);
+			}
+		});
+		svrCfgInfoStg.readFromLocalIfNeed();
 	}
 
 	public HashMap<Integer, IFactory> getBaseDBFactories() {
@@ -503,20 +523,12 @@ public class AccountStorage implements IAccountStorage {
 		Log.i(TAG, "closeDB " + Util.getStack());
 		if (dataDB != null) {
 			dataDB.closeDB(isUEH);
-//20130204 comment by dk process in sqliteDB			
-//			dataDB = null;
 		}
 
 		if (memDB != null) {
 			memDB.closeDB();
 			memDB = null;
 		}
-
-		// TODO
-		// if(snsDB != null){
-		// snsDB.closeDB();
-		// snsDB = null;
-		// }
 	}
 	
 	public void attachMemDBTable(IOnAttachTable table) {
@@ -755,6 +767,9 @@ public class AccountStorage implements IAccountStorage {
 		Log.w(TAG, "account storage reset");
 	}
 
+	/**
+	 * 清除
+	 */
 	public void erase() {
 		if (uin == ConstantsProtocal.MM_INVALID_UIN) {
 			return;
@@ -790,9 +805,19 @@ public class AccountStorage implements IAccountStorage {
 		//
 		reset();
 	}
+	
+	public ConfigStorage getConfigStg() {
+		if (uin == ConstantsProtocal.MM_INVALID_UIN) {
+			throw new AccountNotReadyException();
+		}
+		return userConfigStg;
+	}
 
+	/**
+	 * 转储备份
+	 */
 	public void dumpDB() {
-		final String uinPath = MD5.getMessageDigest(("mm" + uin).getBytes());
+		final String uinPath = MD5.getMessageDigest(("mn" + uin).getBytes());
 		cachePath = ConstantsStorage.DATAROOT_MOBILEMEM_PATH + uinPath + "/";
 		final String dbPath = ConstantsStorage.DATAROOT_SDCARD_PATH + uinPath + "/";
 		FileOperation.deleteFile(dbPath + ConstantsStorage.ENDB_NAME + ".dump");
@@ -803,7 +828,7 @@ public class AccountStorage implements IAccountStorage {
 	}
 	
 	public void dumpReportDir() {
-		final String uinPath = MD5.getMessageDigest(("mm" + uin).getBytes());
+		final String uinPath = MD5.getMessageDigest(("mn" + uin).getBytes());
 		cachePath = ConstantsStorage.DATAROOT_MOBILEMEM_PATH + uinPath + "/";
 		final String reportPath = ConstantsStorage.DATAROOT_SDCARD_PATH + uinPath + "/" + "dump_" + STORAGE_REPORT;
 		FileOperation.deleteDir(new File(reportPath));

@@ -1,6 +1,10 @@
 package com.mini.mn.model;
 
+import java.lang.reflect.Field;
 import java.util.Map;
+
+import android.os.Parcel;
+
 import com.mini.mn.model.Entity.Builder;
 
 /**
@@ -86,5 +90,17 @@ public class AbstractRequest extends Entity implements Builder {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(timestamp);
+		dest.writeString(cmd);
+		dest.writeString(from);
+		dest.writeLong(msgId);
+		dest.writeMap(data);
+		dest.writeString(cookieValue);
+		dest.writeString(deviceId);
+		super.writeToParcel(dest, flags);
 	}
 }

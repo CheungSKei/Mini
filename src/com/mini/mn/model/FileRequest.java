@@ -2,6 +2,8 @@ package com.mini.mn.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import android.os.Parcel;
 /**
  * 客户端发送文件数据结构
  *
@@ -27,4 +29,10 @@ public class FileRequest extends AbstractRequest {
     public void setFiles(List<FileContent> files) {
         this.files = files;
     }
+    
+    @Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeList(files);
+		super.writeToParcel(dest, flags);
+	}
 }

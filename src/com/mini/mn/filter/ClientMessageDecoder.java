@@ -12,6 +12,8 @@ import com.google.gson.reflect.TypeToken;
 import com.mini.mn.constant.Constants;
 import com.mini.mn.model.AbstractRequest;
 import com.mini.mn.model.AbstractResponse;
+import com.mini.mn.model.HeartBeatRequest;
+import com.mini.mn.model.HeartBeatResponse;
 
 /**
  * 客户端消息解解码类.<br>
@@ -136,6 +138,16 @@ public class ClientMessageDecoder extends CumulativeProtocolDecoder {
 					AbstractResponse response = new AbstractResponse();
 					response = gson.fromJson(receiveMessage, AbstractResponse.class);
 					out.write(response);
+				}else if(Constants.IMCmd.IM_HEARTBEAT_CMD.equals(cmd)){
+					if(Constants.REQUEST_TYPE.equals(map.get("type"))){
+						HeartBeatRequest request = new HeartBeatRequest();
+						request = gson.fromJson(receiveMessage, HeartBeatRequest.class);
+						out.write(request);
+					}else if(Constants.RESPONSE_TYPE.equals(map.get("type"))){
+						HeartBeatResponse response = new HeartBeatResponse();
+						response = gson.fromJson(receiveMessage, HeartBeatResponse.class);
+						out.write(response);
+					}
 				}else{
 					AbstractRequest request = new AbstractRequest();
 					request = gson.fromJson(receiveMessage, AbstractRequest.class);

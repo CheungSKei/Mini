@@ -40,5 +40,5 @@ interface IMessageListener_AIDL {
 	/**
 	 * 当手机网络状态发生变化(NetworkInfo类型)
 	 */
-	void onNetworkChanged(in byte[] info);
+	void onNetworkChanged(in NetworkInfo info);
 }

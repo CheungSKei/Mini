@@ -17,7 +17,7 @@ import junit.framework.Assert;
 import android.database.Cursor;
 
 /**
- * 数据库初始化
+ * 初始化数据库、复制表、打开加密数据库、打开非加密数据库、创建表
  * 
  * @version 1.0.0
  * @date 2014-10-09
